@@ -1,21 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+	internal "sipub-test/internal"
+	product "sipub-test/internal/product"
 )
 
 const portNum string = ":8080"
 
-func Home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Homepage")
-}
-
-func Info(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Info page")
+// Golang doesn't allow slices to be constant, so var will do it
+var routers = []internal.IRouter{
+	product.ProductRouter{},
 }
 
 func main() {
-	router := http.NewServeMux()
-	router.HandleFunc("/", Home)
+	mux := http.NewServeMux()
+	internal.RouterInitializeAll(mux, routers)
 }

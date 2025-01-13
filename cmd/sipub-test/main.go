@@ -24,4 +24,5 @@ var routers = []internal.IRouter{
 func main() {
 	mux := http.NewServeMux()
 	RouterInitializeAll(mux, routers)
+	http.ListenAndServe(portNum, mux)
 }

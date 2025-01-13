@@ -13,6 +13,12 @@ type InMemoryProductRepository struct {
 	products map[string]ProductModel
 }
 
+func NewInMemoryProductRepository() *InMemoryProductRepository {
+	return &InMemoryProductRepository{
+		products: make(map[string]ProductModel),
+	}
+}
+
 func (r *InMemoryProductRepository) Create(params ProductParams) ProductModel {
 	product := ProductModel{
 		id:       uuid.NewString(),

@@ -13,7 +13,7 @@ var inMemoryRepository = product.NewInMemoryProductRepository()
 // will not be reset in a TestMain. TestMain only resets the test function
 // itself (TestXxx). If we could define a new method for `testing.T` I could
 // just add this to it to simplify workflow.
-func beforeEach() {
+func beforeEachRepo() {
 	// Each test should be independent of one another, so the inMemoryRepo will be reset
 	inMemoryRepository = product.NewInMemoryProductRepository()
 }
@@ -22,8 +22,8 @@ func beforeEach() {
 // if not specified - as validation is a responsibility of the controller.
 // NOTE: I should have used random value generator for this, but because this
 // is so simple, this should do it!
-func TestCreate(t *testing.T) {
-	beforeEach()
+func TestRepositoryCreate(t *testing.T) {
+	beforeEachRepo()
 	t.Run("CreateProductWithOnlyWeight", func(t *testing.T) {
 		product := inMemoryRepository.Create(product.ProductParams{
 			WeightGrams: 100.0,
@@ -36,7 +36,7 @@ func TestCreate(t *testing.T) {
 		assert.EqualValues(t, product.GetPrice(), 0, "Should initialize field as zero if not specified")
 	})
 
-	beforeEach()
+	beforeEachRepo()
 	t.Run("CreateProductWithOnlyPrice", func(t *testing.T) {
 		product := inMemoryRepository.Create(product.ProductParams{
 			Price: 100.0,
@@ -45,7 +45,7 @@ func TestCreate(t *testing.T) {
 		assert.EqualValues(t, product.GetPrice(), 100, "Should initialize field as zero if not specified")
 	})
 
-	beforeEach()
+	beforeEachRepo()
 	t.Run("CreateProductWithWeightAndPrice", func(t *testing.T) {
 		product := inMemoryRepository.Create(product.ProductParams{
 			WeightGrams: 100.0,
@@ -55,7 +55,7 @@ func TestCreate(t *testing.T) {
 		assert.EqualValues(t, product.GetWeight(), 100, "Weight should be set correctly")
 	})
 
-	beforeEach()
+	beforeEachRepo()
 	t.Run("CreateProductWithDefaults", func(t *testing.T) {
 		product := inMemoryRepository.Create(product.ProductParams{})
 		assert.EqualValues(t, product.GetPrice(), 0, "Should initialize price as zero by default")

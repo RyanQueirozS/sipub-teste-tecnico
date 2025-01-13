@@ -10,9 +10,22 @@ type ProductRouter struct {
 	controller   internal.IController
 }
 
+// Ideally there should be a param to change the controller when needed, but
+// this will make the code bigger and I will not change the controller nor the
+// repository
+func NewProductRouter() ProductRouter {
+	router := ProductRouter{
+		controller: &ProductController{
+			repository: &InMemoryProductRepository{
+				products: make(map[string]ProductModel),
+			},
+		},
+	}
+	return router
+}
+
 func (r ProductRouter) Init(mux *http.ServeMux) {
-	r.baseEndPoint = "products/"
-	r.controller = &ProductController{} // TODO will make a factory
+	r.baseEndPoint = "/products"
 
 	r.create(mux)
 	r.getAll(mux)

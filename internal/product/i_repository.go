@@ -1,21 +1,21 @@
 package product
 
-type IProductRespository interface {
+type IProductRepository interface {
 	// Returns the created product
-	Create(ProductParams) ProductModel
+	Create(ProductParams) (ProductModel, error)
 
 	// Returns the found products
-	GetAll() []ProductModel
+	GetAll() ([]ProductModel, error)
 
 	// Returns the found product
-	GetOne() ProductModel
+	GetOne() (ProductModel, error)
 
 	// Returns amount of deleted products
-	DeleteOne() uint
+	DeleteOne() (uint, error)
 
 	// Returns amount of deleted products
-	DeleteAll() uint
+	DeleteAll() (uint, error)
 
 	// Returns the updated product
-	Update() ProductModel
+	Update() (ProductModel, error)
 }

@@ -5,17 +5,19 @@ type IProductRepository interface {
 	Create(ProductParams) (ProductModel, error)
 
 	// Returns the found products
-	GetAll() ([]ProductModel, error)
+	// NOTE: reusing the same type for a filter and a "constructor" is not
+	// ideal at all, but it will save on code repetition
+	GetAll(filter ProductParams) ([]ProductModel, error)
 
 	// Returns the found product
-	GetOne() (ProductModel, error)
+	GetOne(id string) (ProductModel, error)
 
 	// Returns amount of deleted products
-	DeleteOne() (uint, error)
+	DeleteOne(id string) (uint, error)
 
 	// Returns amount of deleted products
-	DeleteAll() (uint, error)
+	DeleteAll(filter ProductParams) (uint, error)
 
 	// Returns the updated product
-	Update() (ProductModel, error)
+	Update(id string, newProduct ProductParams) (ProductModel, error)
 }

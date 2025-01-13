@@ -30,8 +30,8 @@ func (r ProductRouter) Init(mux *http.ServeMux) {
 	r.create(mux)
 	r.getAll(mux)
 	r.getOne(mux)
-	r.deleteOne(mux)
 	r.deleteAll(mux)
+	r.deleteOne(mux)
 	r.update(mux)
 }
 
@@ -45,19 +45,17 @@ func (r ProductRouter) getAll(mux *http.ServeMux) {
 }
 
 func (r ProductRouter) getOne(mux *http.ServeMux) {
-	// TODO Will need to separate this later
-	// mux.HandleFunc("GET ", r.controller.GetOne)
-}
-
-func (r ProductRouter) deleteOne(mux *http.ServeMux) {
-	mux.HandleFunc("DELETE "+r.baseEndPoint, r.controller.DeleteOne)
+	mux.HandleFunc("GET "+r.baseEndPoint+"/{id}", r.controller.GetOne)
 }
 
 func (r ProductRouter) deleteAll(mux *http.ServeMux) {
-	// TODO will need to separate this later
-	// mux.HandleFunc("DELETE "+r.baseEndPoint, r.controller.DeleteAll)
+	mux.HandleFunc("DELETE "+r.baseEndPoint, r.controller.DeleteAll)
+}
+
+func (r ProductRouter) deleteOne(mux *http.ServeMux) {
+	mux.HandleFunc("DELETE "+r.baseEndPoint+"/{id}", r.controller.DeleteOne)
 }
 
 func (r ProductRouter) update(mux *http.ServeMux) {
-	mux.HandleFunc("PUT "+r.baseEndPoint, r.controller.Update)
+	mux.HandleFunc("PUT "+r.baseEndPoint+"/{id}", r.controller.Update)
 }

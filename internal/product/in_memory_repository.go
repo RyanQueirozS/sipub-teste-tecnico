@@ -30,23 +30,37 @@ func (r *InMemoryProductRepository) Create(params ProductParams) (ProductModel, 
 	return product, nil
 }
 
-func (r *InMemoryProductRepository) GetAll() ([]ProductModel, error) {
-	// Todo have a querystring
-	return nil, nil
+func (r *InMemoryProductRepository) GetAll(filter ProductParams) ([]ProductModel, error) {
+	var result []ProductModel
+
+	for _, product := range r.products {
+		// Check if the product matches the filter.
+		if (filter.WeightGrams == 0 || product.weightGrams == filter.WeightGrams) &&
+			(filter.Price == 0 || product.price == filter.Price) &&
+			(filter.Name == "" || product.name == filter.Name) {
+			result = append(result, product)
+		}
+	}
+
+	return result, nil
 }
 
-func (r *InMemoryProductRepository) GetOne() (ProductModel, error) {
-	return ProductModel{}, nil
+func (r *InMemoryProductRepository) GetOne(id string) (ProductModel, error) {
+	product, exists := r.products[id]
+	if !exists {
+		return ProductModel{}, nil
+	}
+	return product, nil
 }
 
-func (r *InMemoryProductRepository) DeleteOne() (uint, error) {
+func (r *InMemoryProductRepository) DeleteOne(id string) (uint, error) {
 	return 0, nil
 }
 
-func (r *InMemoryProductRepository) DeleteAll() (uint, error) {
+func (r *InMemoryProductRepository) DeleteAll(filter ProductParams) (uint, error) {
 	return 0, nil
 }
 
-func (r *InMemoryProductRepository) Update() (ProductModel, error) {
+func (r *InMemoryProductRepository) Update(id string, newProduct ProductParams) (ProductModel, error) {
 	return ProductModel{}, nil
 }

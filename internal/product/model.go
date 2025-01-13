@@ -2,16 +2,20 @@ package product
 
 import "time"
 
+// This is what will be used to create the product model
 type ProductParams struct {
 	WeightGrams float32
 	Price       float32
 	Name        string
 }
 
+// This is what will be passed to user about the product model.
 type ProductDTO struct {
-	WeightInGrams float32 `json:"WeightInGrams"`
-	Price         float32 `json:"Price"`
-	Name          string  `json:"Name"`
+	DeletedAt     time.Time `json:"DeletedAt"`
+	CreatedAt     time.Time `json:"CreatedAt"`
+	WeightInGrams float32   `json:"WeightInGrams"`
+	Price         float32   `json:"Price"`
+	Name          string    `json:"Name"`
 }
 
 type ProductModel struct {
@@ -30,7 +34,7 @@ type ProductModel struct {
 }
 
 func (p *ProductModel) ToDTO() ProductDTO {
-	dtoProduct := ProductDTO{WeightInGrams: p.weightGrams, Price: p.price, Name: p.name}
+	dtoProduct := ProductDTO{DeletedAt: p.deletedAt, CreatedAt: p.createdAt, WeightInGrams: p.weightGrams, Price: p.price, Name: p.name}
 	return dtoProduct
 }
 

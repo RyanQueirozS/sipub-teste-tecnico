@@ -15,11 +15,7 @@ type ProductRouter struct {
 // repository
 func NewProductRouter() ProductRouter {
 	router := ProductRouter{
-		controller: &ProductController{
-			repository: &InMemoryProductRepository{
-				products: make(map[string]ProductModel),
-			},
-		},
+		controller: NewProductController(),
 	}
 	return router
 }

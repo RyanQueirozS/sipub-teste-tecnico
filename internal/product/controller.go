@@ -2,25 +2,37 @@ package product
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type ProductController struct {
 	// TODO
-	// validatorService IValidatorService
+	validator  ProductValidator
 	repository IProductRepository
 }
 
+// Used for testing
+func NewProductController() *ProductController {
+	return &ProductController{repository: NewInMemoryRepository()}
+}
+
 func (c *ProductController) Create(w http.ResponseWriter, r *http.Request) {
-	var product ProductParams
-	err := json.NewDecoder(r.Body).Decode(&product)
+	var productParam ProductParams
+	err := json.NewDecoder(r.Body).Decode(&productParam)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	// TODO Request validation should happen now
-	createdProduct, err := c.repository.Create(product)
+
+	if err := c.validator.Validate(productParam); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	createdProduct, err := c.repository.Create(productParam)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -39,42 +51,49 @@ func (c *ProductController) GetAll(w http.ResponseWriter, r *http.Request) {
 	var productParams ProductParams
 	queryParams := r.URL.Query()
 
-	if weight := queryParams.Get("weight_grams"); weight != "" {
+	// First it checks to see if the values in the querystring are valid
+	for key := range queryParams {
+		if strings.ToLower(key) != "weightgrams" &&
+			strings.ToLower(key) != "price" &&
+			strings.ToLower(key) != "name" {
+			http.Error(w, fmt.Sprintf("Invalid query parameter: %s", key), http.StatusBadRequest)
+			return
+		}
+	}
+
+	// If the values are valid it will check what each value is
+	if weight := queryParams.Get("WeightGrams"); weight != "" {
 		weightValue, err := strconv.ParseFloat(weight, 32)
 		if err == nil {
 			productParams.WeightGrams = float32(weightValue)
-		} else {
-			http.Error(w, "Invalid weight_grams value", http.StatusBadRequest)
-			return
 		}
 	}
 
-	if price := queryParams.Get("price"); price != "" {
+	if price := queryParams.Get("Price"); price != "" {
 		priceValue, err := strconv.ParseFloat(price, 32)
 		if err == nil {
 			productParams.Price = float32(priceValue)
-		} else {
-			http.Error(w, "Invalid price value", http.StatusBadRequest)
-			return
 		}
 	}
 
-	if name := queryParams.Get("name"); name != "" {
+	if name := queryParams.Get("Name"); name != "" {
 		productParams.Name = name
 	}
 
+	// It now passes the product param as a "filter" and gets the found products
 	foundProducts, err := c.repository.GetAll(productParams)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 
 	dtoFoundProjects := []ProductDTO{}
 	for i := 0; i < len(foundProducts); i++ {
 		dtoFoundProjects = append(dtoFoundProjects, foundProducts[i].ToDTO())
 	}
+	// Returns the DTO products
 	if err := json.NewEncoder(w).Encode(dtoFoundProjects); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

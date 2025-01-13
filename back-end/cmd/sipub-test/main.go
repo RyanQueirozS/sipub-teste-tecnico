@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	internal "sipub-test/internal"
 	product "sipub-test/internal/product"
@@ -19,5 +20,6 @@ func RouterInitializeAll(mux *http.ServeMux, routers ...internal.IRouter) {
 func main() {
 	mux := http.NewServeMux()
 	RouterInitializeAll(mux, product.NewProductRouter())
+	log.Println("Starting server...")
 	http.ListenAndServe(portNum, mux)
 }

@@ -2,20 +2,21 @@ package product
 
 import "time"
 
-// This is what will be used to create the product model
+// This is what will be used to create/find/update the product model. The fields are used as pointers so they can be nullified
 type ProductParams struct {
-	WeightGrams float32
-	Price       float32
-	Name        string
+	IsActive    *bool
+	IsDeleted   *bool // Soft deletion
+	WeightGrams *float32
+	Price       *float32
+	Name        *string
 }
 
 // This is what will be passed to user about the product model.
 type ProductDTO struct {
-	DeletedAt     time.Time `json:"DeletedAt"`
-	CreatedAt     time.Time `json:"CreatedAt"`
-	WeightInGrams float32   `json:"WeightInGrams"`
-	Price         float32   `json:"Price"`
-	Name          string    `json:"Name"`
+	Id            string  `json:"Id"`
+	WeightInGrams float32 `json:"WeightInGrams"`
+	Price         float32 `json:"Price"`
+	Name          string  `json:"Name"`
 }
 
 type ProductModel struct {
@@ -24,7 +25,6 @@ type ProductModel struct {
 	id        string // ID will be a uuid
 	isActive  bool
 	isDeleted bool // Soft deletion
-	deletedAt time.Time
 	createdAt time.Time
 
 	// Weight and price per product
@@ -34,7 +34,7 @@ type ProductModel struct {
 }
 
 func (p *ProductModel) ToDTO() ProductDTO {
-	dtoProduct := ProductDTO{DeletedAt: p.deletedAt, CreatedAt: p.createdAt, WeightInGrams: p.weightGrams, Price: p.price, Name: p.name}
+	dtoProduct := ProductDTO{Id: p.id, WeightInGrams: p.weightGrams, Price: p.price, Name: p.name}
 	return dtoProduct
 }
 

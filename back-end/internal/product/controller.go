@@ -14,7 +14,6 @@ type ProductController struct {
 	repository IProductRepository
 }
 
-// Used for testing
 func NewProductController() *ProductController {
 	return &ProductController{repository: NewInMemoryRepository()}
 }
@@ -65,19 +64,19 @@ func (c *ProductController) GetAll(w http.ResponseWriter, r *http.Request) {
 	if weight := queryParams.Get("WeightGrams"); weight != "" {
 		weightValue, err := strconv.ParseFloat(weight, 32)
 		if err == nil {
-			productParams.WeightGrams = float32(weightValue)
+			*productParams.WeightGrams = float32(weightValue)
 		}
 	}
 
 	if price := queryParams.Get("Price"); price != "" {
 		priceValue, err := strconv.ParseFloat(price, 32)
 		if err == nil {
-			productParams.Price = float32(priceValue)
+			*productParams.Price = float32(priceValue)
 		}
 	}
 
 	if name := queryParams.Get("Name"); name != "" {
-		productParams.Name = name
+		*productParams.Name = name
 	}
 
 	// It now passes the product param as a "filter" and gets the found products
@@ -112,7 +111,7 @@ func (c *ProductController) DeleteAll(w http.ResponseWriter, r *http.Request) {
 	if weight := queryParams.Get("weight_grams"); weight != "" {
 		weightValue, err := strconv.ParseFloat(weight, 32)
 		if err == nil {
-			productParams.WeightGrams = float32(weightValue)
+			*productParams.WeightGrams = float32(weightValue)
 		} else {
 			http.Error(w, "Invalid weight_grams value", http.StatusBadRequest)
 			return
@@ -122,7 +121,7 @@ func (c *ProductController) DeleteAll(w http.ResponseWriter, r *http.Request) {
 	if price := queryParams.Get("price"); price != "" {
 		priceValue, err := strconv.ParseFloat(price, 32)
 		if err == nil {
-			productParams.Price = float32(priceValue)
+			*productParams.Price = float32(priceValue)
 		} else {
 			http.Error(w, "Invalid price value", http.StatusBadRequest)
 			return
@@ -130,7 +129,7 @@ func (c *ProductController) DeleteAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if name := queryParams.Get("name"); name != "" {
-		productParams.Name = name
+		*productParams.Name = name
 	}
 
 	deletedCount, err := c.repository.DeleteAll(productParams)

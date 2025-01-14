@@ -23,7 +23,7 @@ func (r *InMemoryProductRepository) Create(params ProductParams) (ProductModel, 
 		id:       uuid.NewString(),
 		isActive: true, isDeleted: false,
 		createdAt:   time.Now(),
-		weightGrams: params.WeightGrams, price: params.Price, name: params.Name,
+		weightGrams: *params.WeightGrams, price: *params.Price, name: *params.Name,
 	}
 	_, exists := r.products[product.id]
 	if exists {
@@ -39,9 +39,9 @@ func (r *InMemoryProductRepository) GetAll(filter ProductParams) ([]ProductModel
 
 	for _, product := range r.products {
 		// Check if the product matches the filter.
-		if (filter.WeightGrams == 0 || product.weightGrams == filter.WeightGrams) &&
-			(filter.Price == 0 || product.price == filter.Price) &&
-			(filter.Name == "" || product.name == filter.Name) {
+		if (filter.WeightGrams == nil || product.weightGrams == *filter.WeightGrams) &&
+			(filter.Price == nil || product.price == *filter.Price) &&
+			(filter.Name == nil || product.name == *filter.Name) {
 			result = append(result, product)
 		}
 	}

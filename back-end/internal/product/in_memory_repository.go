@@ -1,3 +1,7 @@
+//go:build ignore
+
+// This was mainly used for testing the controller and developing the
+// architecture due to it's simplicity.
 package product
 
 import (

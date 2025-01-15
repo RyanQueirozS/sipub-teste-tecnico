@@ -1,6 +1,8 @@
-# https://docs.docker.com/build/building/multi-stage/
-# I just didn't add the alpine linux because that would be more overhead that wouldn't payoff
-FROM golang:1.23.4
+# https://docs.docker.com/build/building/multi-stage/ Used as reference, although I don't have another container (tester)
+
+# Stage 1
+# This one will build and run the application
+FROM golang:1.23.4 AS builder
 
 # Set working directory
 WORKDIR /app

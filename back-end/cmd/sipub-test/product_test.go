@@ -1,4 +1,4 @@
-package integration_test
+package main
 
 // This file mainly does integration testing for the product creation
 
@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// Creating through the controller itself (making an http request)
 func TestControllerCreate(t *testing.T) {
 	t.Run("ShouldCreateAValidProductWhenPassingAllValidParams", func(t *testing.T) {
 		controller := product.NewProductController()

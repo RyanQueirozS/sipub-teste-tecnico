@@ -15,7 +15,7 @@ type ProductController struct {
 }
 
 func NewProductController() *ProductController {
-	return &ProductController{repository: NewInMemoryRepository()}
+	return &ProductController{repository: NewMySQLproductRepository()}
 }
 
 func (c *ProductController) Create(w http.ResponseWriter, r *http.Request) {

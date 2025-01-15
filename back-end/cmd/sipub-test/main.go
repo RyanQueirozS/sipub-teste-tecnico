@@ -19,8 +19,8 @@ func RouterInitializeAll(mux *http.ServeMux, routers ...internal.IRouter) {
 }
 
 func main() {
-	dns := "string"
-	if err := db.InitializeDB(dns); err != nil {
+	dsn := "user:password@tcp(mysql_db:3306)/sipub_test"
+	if err := db.InitializeDB(dsn); err != nil {
 		log.Fatal(err)
 	}
 	defer db.CloseDB()

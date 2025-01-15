@@ -5,50 +5,59 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"sipub-test/db"
+	"time"
 
 	"github.com/google/uuid"
 )
 
-func createNewProductTableIfNoneExists() {
-	db := db.GetDB()
+type MySQLProductRepository struct {
+	db *sql.DB
+}
+
+// Mainly used for testing, but could be used elsewhere
+func (r *MySQLProductRepository) SetDB(db *sql.DB) { r.db = db }
+
+func (r *MySQLProductRepository) createNewProductTableIfNoneExists() {
+	r.db = db.GetDB()
 
 	createTableQuery := `
 	CREATE TABLE IF NOT EXISTS products (
 		id CHAR(36) NOT NULL,
 		isActive BOOLEAN NOT NULL DEFAULT TRUE,
 		isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
-		deletedAt DATETIME NULL DEFAULT NULL,
-		createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        createdAt CHAR(19) NOT NULL,
 		weightGrams FLOAT NOT NULL,
 		price FLOAT NOT NULL,
 		name VARCHAR(255) NOT NULL,
 		PRIMARY KEY (id)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
 	// https://dev.mysql.com/doc/refman/8.4/en/innodb-benefits.html
-	// Mainly using because it supports foreing keys
+	// Mainly using InnoDB because it supports foreing keys
+	// createdAt is a string because it is simpler to handle. It uses this format 2006-01-02 15:04:05 (19 chars)
 
-	// Execute the query
-	if _, err := db.Exec(createTableQuery); err != nil {
+	if _, err := r.db.Exec(createTableQuery); err != nil {
 		log.Fatalf("Failed to create table: %v", err)
 	}
-
-	fmt.Println("Table 'products' has been created successfully (if it did not already exist).")
-}
-
-type MySQLProductRepository struct {
-	db *sql.DB
 }
 
 func NewMySQLproductRepository() *MySQLProductRepository {
-	createNewProductTableIfNoneExists()
-	return &MySQLProductRepository{db: db.GetDB()}
+	repo := &MySQLProductRepository{db: db.GetDB()}
+	repo.createNewProductTableIfNoneExists()
+	return repo
 }
 
 func (r *MySQLProductRepository) Create(params ProductParams) (ProductModel, error) {
 	id := uuid.NewString()
-	query := `INSERT INTO products (id, isActive, isDeleted, weightGrams, price, name) VALUES (?, ?, ?, ?, ?, ?)`
-	_, err := r.db.Exec(query, id, params.IsActive, params.IsDeleted, params.WeightGrams, params.Price, params.Name)
+
+	// Round price to 2 decimal places, if not, there will be floating number
+	// innacuracy
+	price := math.Round(float64(*params.Price)*100) / 100.0
+	timeCreated := time.Now().Format("2006-01-02 15:04:05")
+
+	query := `INSERT INTO products (id, isActive, isDeleted, createdAt, weightGrams, price, name) VALUES (?, ?, ?, ?, ?, ?, ?)`
+	_, err := r.db.Exec(query, id, *params.IsActive, *params.IsDeleted, timeCreated, *params.WeightGrams, price, *params.Name)
 	if err != nil {
 		return ProductModel{}, fmt.Errorf("failed to create product: %w", err)
 	}
@@ -57,14 +66,15 @@ func (r *MySQLProductRepository) Create(params ProductParams) (ProductModel, err
 		id:          id,
 		isActive:    *params.IsActive,
 		isDeleted:   *params.IsDeleted,
+		createdAt:   timeCreated,
 		weightGrams: *params.WeightGrams,
-		price:       *params.Price,
+		price:       float32(price),
 		name:        *params.Name,
 	}, nil
 }
 
 func (r *MySQLProductRepository) GetAll(filter ProductParams) ([]ProductModel, error) {
-	query := `SELECT id, isActive, isDeleted, deletedAt, createdAt, weightGrams, price, name FROM products WHERE 1=1`
+	query := `SELECT id, isActive, isDeleted, createdAt, weightGrams, price, name FROM products WHERE 1=1`
 	args := []interface{}{}
 
 	if filter.IsActive != nil {
@@ -82,7 +92,7 @@ func (r *MySQLProductRepository) GetAll(filter ProductParams) ([]ProductModel, e
 
 	rows, err := r.db.Query(query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch products: %w", err)
+		return nil, fmt.Errorf("failed to get products: %w", err)
 	}
 	defer rows.Close()
 
@@ -99,15 +109,20 @@ func (r *MySQLProductRepository) GetAll(filter ProductParams) ([]ProductModel, e
 }
 
 func (r *MySQLProductRepository) GetOne(id string) (ProductModel, error) {
-	query := `SELECT id, isActive, isDeleted, deletedAt, createdAt, weightGrams, price, name FROM products WHERE id = ?`
+	query := `SELECT id, isActive, isDeleted, createdAt, weightGrams, price, name FROM products WHERE id = ?`
 	var product ProductModel
 	row := r.db.QueryRow(query, id)
 	if err := row.Scan(&product.id, &product.isActive, &product.isDeleted, &product.createdAt, &product.weightGrams, &product.price, &product.name); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return ProductModel{}, fmt.Errorf("product not found")
 		}
-		return ProductModel{}, fmt.Errorf("failed to fetch product: %w", err)
+		return ProductModel{}, fmt.Errorf("failed to get product: %w", err)
 	}
+	if product.isDeleted {
+		return ProductModel{}, errors.New("product not found")
+	}
+
+	fmt.Println(product.id)
 	return product, nil
 }
 
@@ -148,7 +163,9 @@ func (r *MySQLProductRepository) DeleteAll(filter ProductParams) (uint, error) {
 
 func (r *MySQLProductRepository) Update(id string, newProduct ProductParams) (ProductModel, error) {
 	query := `UPDATE products SET isActive = ?, isDeleted = ?, weightGrams = ?, price = ?, name = ? WHERE id = ?`
-	_, err := r.db.Exec(query, newProduct.IsActive, newProduct.IsDeleted, newProduct.WeightGrams, newProduct.Price, newProduct.Name, id)
+	roundedWeight := math.Round(float64(*newProduct.WeightGrams)*100) / 100
+	roundedPrice := math.Round(float64(*newProduct.Price)*100) / 100
+	_, err := r.db.Exec(query, *newProduct.IsActive, *newProduct.IsDeleted, roundedWeight, roundedPrice, *newProduct.Name, id)
 	if err != nil {
 		return ProductModel{}, fmt.Errorf("failed to update product: %w", err)
 	}

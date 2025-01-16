@@ -135,7 +135,7 @@ func TestGetProductByID(t *testing.T) {
 	product, err := repo.GetOne("123")
 
 	// Rounded to fix floating point innacuracy
-	roundedWeight := math.Round(float64(product.ToDTO().WeightInGrams)*100) / 100
+	roundedWeight := math.Round(float64(product.ToDTO().WeightGrams)*100) / 100
 	roundedPrice := math.Round(float64(product.ToDTO().Price)*100) / 100
 
 	assert.NoError(t, err, "Should have no errors")
@@ -258,7 +258,7 @@ func TestUpdateProduct(t *testing.T) {
 		assert.Equal(t, false, product.GetIsActive(), "IsActive should match the updated value")
 		assert.Equal(t, "Partially Updated Product", product.ToDTO().Name, "Name should be updated")
 		assert.Equal(t, float32(19.99), product.ToDTO().Price, "Price should remain unchanged")
-		assert.Equal(t, float32(100.0), product.ToDTO().WeightInGrams, "Weight should remain unchanged")
+		assert.Equal(t, float32(100.0), product.ToDTO().WeightGrams, "Weight should remain unchanged")
 	})
 }
 

@@ -131,6 +131,9 @@ func (r *MySQLProductRepository) DeleteOne(id string) (uint, error) {
 		return 0, fmt.Errorf("failed to delete product: %w", err)
 	}
 	count, _ := res.RowsAffected()
+	if count == 0 {
+		return 0, fmt.Errorf("failed to delete product: %w", err)
+	}
 	return uint(count), nil
 }
 

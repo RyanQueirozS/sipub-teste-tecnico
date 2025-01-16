@@ -1,12 +1,18 @@
 package product
 
+// I know that there is a lot of code repetition, and there is a possibility of
+// just letting the main model to have all of it's fields public. This code
+// repeats itself often because of the no inheritance that golang provides, not
+// that it is a bad thing - I personally don't like it - it's just that some
+// strategies wont work.
+
 // This is what will be used to create/find/update the product model. The
 // fields are used as pointers so they can be nullified
 type ProductParams struct {
 	IsActive    *bool
-	IsDeleted   *bool // Soft deletion
+	IsDeleted   *bool
+	CreatedAt   *string
 	WeightGrams *float32
-	CreatedAt   *string // TODO
 	Price       *float32
 	Name        *string
 }
@@ -14,11 +20,11 @@ type ProductParams struct {
 // This is what will be passed to user about the product model. Perhaps DTO
 // isn't the best name
 type ProductDTO struct {
-	Id            string  `json:"Id"`
-	CreatedAt     string  `json:"CreatedAt"`
-	WeightInGrams float32 `json:"WeightInGrams"`
-	Price         float32 `json:"Price"`
-	Name          string  `json:"Name"`
+	Id          string  `json:"Id"`
+	CreatedAt   string  `json:"CreatedAt"`
+	WeightGrams float32 `json:"WeightGrams"`
+	Price       float32 `json:"Price"`
+	Name        string  `json:"Name"`
 }
 
 type ProductModel struct {
@@ -36,7 +42,7 @@ type ProductModel struct {
 }
 
 func (p *ProductModel) ToDTO() ProductDTO {
-	dtoProduct := ProductDTO{Id: p.id, CreatedAt: p.createdAt, WeightInGrams: p.weightGrams, Price: p.price, Name: p.name}
+	dtoProduct := ProductDTO{Id: p.id, CreatedAt: p.createdAt, WeightGrams: p.weightGrams, Price: p.price, Name: p.name}
 	return dtoProduct
 }
 

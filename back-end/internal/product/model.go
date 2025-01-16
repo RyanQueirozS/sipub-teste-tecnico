@@ -1,6 +1,7 @@
 package product
 
-// This is what will be used to create/find/update the product model. The fields are used as pointers so they can be nullified
+// This is what will be used to create/find/update the product model. The
+// fields are used as pointers so they can be nullified
 type ProductParams struct {
 	IsActive    *bool
 	IsDeleted   *bool // Soft deletion
@@ -10,7 +11,8 @@ type ProductParams struct {
 	Name        *string
 }
 
-// This is what will be passed to user about the product model.
+// This is what will be passed to user about the product model. Perhaps DTO
+// isn't the best name
 type ProductDTO struct {
 	Id            string  `json:"Id"`
 	CreatedAt     string  `json:"CreatedAt"`
@@ -48,6 +50,10 @@ func (p *ProductModel) GetPrice() float32 {
 
 func (p *ProductModel) GetName() string {
 	return p.name
+}
+
+func (p *ProductModel) GetIsDeleted() bool {
+	return p.isDeleted
 }
 
 func (p *ProductModel) GetIsActive() bool {

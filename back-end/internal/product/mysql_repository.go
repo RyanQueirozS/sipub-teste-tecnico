@@ -49,6 +49,9 @@ func NewMySQLproductRepository() *MySQLProductRepository {
 }
 
 func (r *MySQLProductRepository) Create(params ProductParams) (ProductModel, error) {
+	if err := validateProductParams(params); err != nil {
+		return ProductModel{}, err
+	}
 	id := uuid.NewString()
 
 	// Round price to 2 decimal places, if not, there will be floating number
@@ -118,11 +121,6 @@ func (r *MySQLProductRepository) GetOne(id string) (ProductModel, error) {
 		}
 		return ProductModel{}, fmt.Errorf("failed to get product: %w", err)
 	}
-	if product.isDeleted {
-		return ProductModel{}, errors.New("product not found")
-	}
-
-	fmt.Println(product.id)
 	return product, nil
 }
 
@@ -162,12 +160,78 @@ func (r *MySQLProductRepository) DeleteAll(filter ProductParams) (uint, error) {
 }
 
 func (r *MySQLProductRepository) Update(id string, newProduct ProductParams) (ProductModel, error) {
+	previousProduct, err := r.GetOne(id)
+	if err != nil {
+		return ProductModel{}, err
+	}
+	// This will check nil arguments and change only the non-nil ones
+	updatedProduct := ProductModel{
+		isActive:    ifNotNilBool(newProduct.IsActive, previousProduct.isActive),
+		isDeleted:   ifNotNilBool(newProduct.IsDeleted, previousProduct.isDeleted),
+		weightGrams: ifNotNilFloat32(newProduct.WeightGrams, previousProduct.weightGrams),
+		price:       ifNotNilFloat32(newProduct.Price, previousProduct.price),
+		name:        ifNotNilString(newProduct.Name, previousProduct.name),
+	}
+	// Remove floating point innacuracy
+	roundedWeight := math.Round(float64(updatedProduct.weightGrams)*100) / 100
+	roundedPrice := math.Round(float64(updatedProduct.price)*100) / 100
+
 	query := `UPDATE products SET isActive = ?, isDeleted = ?, weightGrams = ?, price = ?, name = ? WHERE id = ?`
-	roundedWeight := math.Round(float64(*newProduct.WeightGrams)*100) / 100
-	roundedPrice := math.Round(float64(*newProduct.Price)*100) / 100
-	_, err := r.db.Exec(query, *newProduct.IsActive, *newProduct.IsDeleted, roundedWeight, roundedPrice, *newProduct.Name, id)
+
+	_, err = r.db.Exec(query, updatedProduct.isActive, updatedProduct.isDeleted, roundedWeight, roundedPrice, updatedProduct.name, id)
 	if err != nil {
 		return ProductModel{}, fmt.Errorf("failed to update product: %w", err)
 	}
 	return r.GetOne(id)
+}
+
+// Helper functions
+
+func validateProductParams(product ProductParams) error {
+	if product.Name == nil {
+		return errors.New("Invalid name")
+	}
+	if *product.Name == "" {
+		return errors.New("invalid Name")
+	}
+	if product.Price == nil {
+		return errors.New("Invalid Price")
+	}
+	if *product.Price <= 0 {
+		return errors.New("Invalid Price")
+	}
+	if product.IsActive == nil {
+		return errors.New("Invalid IsActive")
+	}
+	if product.IsDeleted == nil {
+		return errors.New("Invalid IsDeleted")
+	}
+	if product.WeightGrams == nil {
+		return errors.New("Invalid WeightGrams")
+	}
+	if *product.WeightGrams <= 0 {
+		return errors.New("Invalid WeightGrams")
+	}
+	return nil
+}
+
+func ifNotNilBool(newVal *bool, oldVal bool) bool {
+	if newVal != nil {
+		return *newVal
+	}
+	return oldVal
+}
+
+func ifNotNilFloat32(newVal *float32, oldVal float32) float32 {
+	if newVal != nil {
+		return *newVal
+	}
+	return oldVal
+}
+
+func ifNotNilString(newVal *string, oldVal string) string {
+	if newVal != nil {
+		return *newVal
+	}
+	return oldVal
 }

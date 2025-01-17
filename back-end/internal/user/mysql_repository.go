@@ -182,11 +182,11 @@ func (r *MySQLUserRepository) Update(id string, newUser UserParams) (UserModel, 
 	}
 	// This will check nil arguments and change only the non-nil ones
 	updatedUser := UserModel{
-		isActive:  nilcheck.IfNotNilBool(newUser.IsActive, previousUser.isActive),
-		isDeleted: nilcheck.IfNotNilBool(newUser.IsDeleted, previousUser.isDeleted),
-		email:     nilcheck.IfNotNilString(newUser.Email, previousUser.email),
-		cpf:       nilcheck.IfNotNilString(newUser.Cpf, previousUser.cpf),
-		name:      nilcheck.IfNotNilString(newUser.Name, previousUser.name),
+		isActive:  nilcheck.NotNilBool(newUser.IsActive, previousUser.isActive),
+		isDeleted: nilcheck.NotNilBool(newUser.IsDeleted, previousUser.isDeleted),
+		email:     nilcheck.NotNilString(newUser.Email, previousUser.email),
+		cpf:       nilcheck.NotNilString(newUser.Cpf, previousUser.cpf),
+		name:      nilcheck.NotNilString(newUser.Name, previousUser.name),
 	}
 	query := `UPDATE users SET isActive = ?, isDeleted = ?, email = ?, cpf = ?, name = ? WHERE id = ?`
 

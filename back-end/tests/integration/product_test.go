@@ -1,4 +1,4 @@
-package main
+package integration
 
 // This file mainly does integration testing for the product creation
 
@@ -17,7 +17,7 @@ import (
 )
 
 // Creating through the controller itself (making an http request)
-func TestControllerCreate(t *testing.T) {
+func TestProductControllerCreate(t *testing.T) {
 	t.Run("ShouldReturnSuccess", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		assert.NoError(t, err)
@@ -79,7 +79,7 @@ func TestControllerCreate(t *testing.T) {
 	})
 }
 
-func TestControllerGetAll(t *testing.T) {
+func TestProductControllerGetAll(t *testing.T) {
 	t.Run("ShouldReturnSuccess", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		assert.NoError(t, err)
@@ -156,7 +156,7 @@ func TestControllerGetAll(t *testing.T) {
 	})
 }
 
-func TestControllerGetOne(t *testing.T) {
+func TestProductControllerGetOne(t *testing.T) {
 	t.Run("ShouldReturnProductIfExists", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
@@ -222,7 +222,7 @@ func TestControllerGetOne(t *testing.T) {
 	})
 }
 
-func TestControllerDeleteOne(t *testing.T) {
+func TestProductControllerDeleteOne(t *testing.T) {
 	t.Run("ShouldDeleteProductSuccessfully", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
@@ -276,7 +276,7 @@ func TestControllerDeleteOne(t *testing.T) {
 	})
 }
 
-func TestControllerDeleteAll(t *testing.T) {
+func TestProductControllerDeleteAll(t *testing.T) {
 	t.Run("ShouldDeleteAllMatchingProducts", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
@@ -307,7 +307,7 @@ func TestControllerDeleteAll(t *testing.T) {
 	})
 }
 
-func TestControllerUpdate(t *testing.T) {
+func TestProductControllerUpdate(t *testing.T) {
 	t.Run("ShouldUpdateProductSuccessfully", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {

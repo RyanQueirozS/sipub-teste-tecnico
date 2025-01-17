@@ -3,7 +3,6 @@ package product
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -189,7 +188,6 @@ func (c *ProductController) DeleteAll(w http.ResponseWriter, r *http.Request) {
 
 	count, err := c.repository.DeleteAll(productParams)
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

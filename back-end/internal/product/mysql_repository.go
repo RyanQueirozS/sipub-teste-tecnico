@@ -175,11 +175,11 @@ func (r *MySQLProductRepository) Update(id string, newProduct ProductParams) (Pr
 	}
 	// This will check nil arguments and change only the non-nil ones
 	updatedProduct := ProductModel{
-		isActive:    nilcheck.IfNotNilBool(newProduct.IsActive, previousProduct.isActive),
-		isDeleted:   nilcheck.IfNotNilBool(newProduct.IsDeleted, previousProduct.isDeleted),
-		weightGrams: nilcheck.IfNotNilFloat32(newProduct.WeightGrams, previousProduct.weightGrams),
-		price:       nilcheck.IfNotNilFloat32(newProduct.Price, previousProduct.price),
-		name:        nilcheck.IfNotNilString(newProduct.Name, previousProduct.name),
+		isActive:    nilcheck.NotNilBool(newProduct.IsActive, previousProduct.isActive),
+		isDeleted:   nilcheck.NotNilBool(newProduct.IsDeleted, previousProduct.isDeleted),
+		weightGrams: nilcheck.NotNilFloat32(newProduct.WeightGrams, previousProduct.weightGrams),
+		price:       nilcheck.NotNilFloat32(newProduct.Price, previousProduct.price),
+		name:        nilcheck.NotNilString(newProduct.Name, previousProduct.name),
 	}
 	// Remove floating point innacuracy
 	roundedWeight := math.Round(float64(updatedProduct.weightGrams)*100) / 100

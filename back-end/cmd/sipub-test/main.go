@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sipub-test/db"
 	internal "sipub-test/internal"
+	"sipub-test/internal/address"
 	product "sipub-test/internal/product"
 	"sipub-test/internal/user"
 )
@@ -30,6 +31,7 @@ func main() {
 	RouterInitializeAll(mux,
 		product.NewProductRouter(),
 		user.NewUserRouter(),
+		address.NewAddressRouter(),
 	)
 	log.Println("Starting server...")
 	http.ListenAndServe(portNum, mux)

@@ -1,11 +1,5 @@
 package user
 
-// I know that there is a lot of code repetition, and there is a possibility of
-// just letting the main model to have all of it's fields public. This code
-// repeats itself often because of the no inheritance that golang provides, not
-// that it is a bad thing - I personally don't like it - it's just that some
-// strategies wont work.
-
 // This is what will be used to create/find/update the user model. The
 // fields are used as pointers so they can be nullified
 type UserParams struct {
@@ -33,7 +27,6 @@ type UserModel struct {
 	isDeleted bool // Soft deletion
 	createdAt string
 
-	// Weight and price per user
 	email string
 	cpf   string
 	name  string

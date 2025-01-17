@@ -6,6 +6,7 @@ import (
 	"sipub-test/db"
 	internal "sipub-test/internal"
 	product "sipub-test/internal/product"
+	"sipub-test/internal/user"
 )
 
 const portNum string = ":8080"
@@ -26,7 +27,10 @@ func main() {
 	defer db.CloseDB()
 
 	mux := http.NewServeMux()
-	RouterInitializeAll(mux, product.NewProductRouter())
+	RouterInitializeAll(mux,
+		product.NewProductRouter(),
+		user.NewUserRouter(),
+	)
 	log.Println("Starting server...")
 	http.ListenAndServe(portNum, mux)
 }

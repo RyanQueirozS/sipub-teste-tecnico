@@ -1,43 +1,42 @@
-package product
+package user
 
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
-type ProductController struct {
+type UserController struct {
 	// TODO
-	validator  ProductValidator
-	repository IProductRepository
+	validator  UserValidator
+	repository IUserRepository
 }
 
 // Used for testing
-func (c *ProductController) SetRepository(repo IProductRepository) {
+func (c *UserController) SetRepository(repo IUserRepository) {
 	c.repository = repo
 }
 
-func NewProductController() *ProductController {
-	return &ProductController{repository: NewMySQLproductRepository()}
+func NewUserController() *UserController {
+	return &UserController{repository: NewMySQLUserRepository()}
 }
 
-func (c *ProductController) Create(w http.ResponseWriter, r *http.Request) {
-	var productParam ProductParams
-	err := json.NewDecoder(r.Body).Decode(&productParam)
+func (c *UserController) Create(w http.ResponseWriter, r *http.Request) {
+	var userParam UserParams
+	err := json.NewDecoder(r.Body).Decode(&userParam)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := c.validator.Validate(productParam); err != nil {
+	if err := c.validator.Validate(userParam); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	createdProduct, err := c.repository.Create(productParam)
+	createdUser, err := c.repository.Create(userParam)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -46,14 +45,14 @@ func (c *ProductController) Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
-	if err := json.NewEncoder(w).Encode(createdProduct.ToDTO()); err != nil {
+	if err := json.NewEncoder(w).Encode(createdUser.ToDTO()); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func (c *ProductController) GetAll(w http.ResponseWriter, r *http.Request) {
-	var productParams ProductParams
+func (c *UserController) GetAll(w http.ResponseWriter, r *http.Request) {
+	var userParams UserParams
 	queryParams := r.URL.Query()
 
 	// First it checks to see if the values in the querystring are valid
@@ -73,37 +72,31 @@ func (c *ProductController) GetAll(w http.ResponseWriter, r *http.Request) {
 	if isActive := queryParams.Get("IsActive"); isActive != "" {
 		isActiveValue, err := strconv.ParseBool(isActive)
 		if err == nil {
-			*productParams.IsActive = isActiveValue
+			*userParams.IsActive = isActiveValue
 		}
 	}
 
 	if isDeleted := queryParams.Get("IsDeleted"); isDeleted != "" {
 		isDeletedValue, err := strconv.ParseBool(isDeleted)
 		if err == nil {
-			*productParams.IsDeleted = isDeletedValue
+			*userParams.IsDeleted = isDeletedValue
 		}
 	}
 
 	if createdAt := queryParams.Get("CreatedAt"); createdAt != "" {
-		*productParams.CreatedAt = createdAt
+		*userParams.CreatedAt = createdAt
 	}
 
-	if weight := queryParams.Get("WeightGrams"); weight != "" {
-		weightValue, err := strconv.ParseFloat(weight, 32)
-		if err == nil {
-			*productParams.WeightGrams = float32(weightValue)
-		}
+	if email := queryParams.Get("WeightGrams"); email != "" {
+		*userParams.Email = email
 	}
 
-	if price := queryParams.Get("Price"); price != "" {
-		priceValue, err := strconv.ParseFloat(price, 32)
-		if err == nil {
-			*productParams.Price = float32(priceValue)
-		}
+	if cpf := queryParams.Get("Price"); cpf != "" {
+		*userParams.Name = cpf
 	}
 
 	if name := queryParams.Get("Name"); name != "" {
-		*productParams.Name = name
+		*userParams.Name = name
 	}
 
 	// NOTE: Why don't I just parse it from the json? Well, if the json is nil,
@@ -111,8 +104,8 @@ func (c *ProductController) GetAll(w http.ResponseWriter, r *http.Request) {
 	// that is another possible error. This way, although repetitive, will make
 	// it simple to understand. Where as having multiple nested `if`s might not
 
-	// It now passes the product param as a "filter" and gets the found products
-	foundProducts, err := c.repository.GetAll(productParams)
+	// It now passes the user param as a "filter" and gets the found users
+	foundUsers, err := c.repository.GetAll(userParams)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -120,76 +113,66 @@ func (c *ProductController) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	dtoFoundProducts := []ProductDTO{}
-	for i := 0; i < len(foundProducts); i++ {
-		dtoFoundProducts = append(dtoFoundProducts, foundProducts[i].ToDTO())
+	dtoFoundUsers := []UserDTO{}
+	for i := 0; i < len(foundUsers); i++ {
+		dtoFoundUsers = append(dtoFoundUsers, foundUsers[i].ToDTO())
 	}
-	// Returns the DTO products
-	if err := json.NewEncoder(w).Encode(dtoFoundProducts); err != nil {
+	// Returns the DTO users
+	if err := json.NewEncoder(w).Encode(dtoFoundUsers); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func (c *ProductController) GetOne(w http.ResponseWriter, r *http.Request) {
+func (c *UserController) GetOne(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	product, err := c.repository.GetOne(id)
+	user, err := c.repository.GetOne(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound) // The Id was not found but the request did go though
 		return
 	}
-	if err := json.NewEncoder(w).Encode(product.ToDTO()); err != nil {
+	if err := json.NewEncoder(w).Encode(user.ToDTO()); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func (c *ProductController) DeleteAll(w http.ResponseWriter, r *http.Request) {
-	var productParams ProductParams
+func (c *UserController) DeleteAll(w http.ResponseWriter, r *http.Request) {
+	var userParams UserParams
 	queryParams := r.URL.Query()
 
 	if isActive := queryParams.Get("IsActive"); isActive != "" {
 		isActiveValue, err := strconv.ParseBool(isActive)
 		if err == nil {
-			*productParams.IsActive = isActiveValue
+			*userParams.IsActive = isActiveValue
 		}
 	}
 
 	if isDeleted := queryParams.Get("IsDeleted"); isDeleted != "" {
 		isDeletedValue, err := strconv.ParseBool(isDeleted)
 		if err == nil {
-			*productParams.IsDeleted = isDeletedValue
+			*userParams.IsDeleted = isDeletedValue
 		}
 	}
 
 	if createdAt := queryParams.Get("CreatedAt"); createdAt != "" {
-		*productParams.CreatedAt = createdAt
+		*userParams.CreatedAt = createdAt
 	}
 
-	if weight := queryParams.Get("WeightGrams"); weight != "" {
-		weightValue, err := strconv.ParseFloat(weight, 32)
-		if err == nil {
-			*productParams.WeightGrams = float32(weightValue)
-		}
+	if email := queryParams.Get("WeightGrams"); email != "" {
+		*userParams.Email = email
 	}
 
-	if price := queryParams.Get("Price"); price != "" {
-		priceValue, err := strconv.ParseFloat(price, 32)
-		if err == nil {
-			*productParams.Price = float32(priceValue)
-		}
+	if cpf := queryParams.Get("Price"); cpf != "" {
+		*userParams.Name = cpf
 	}
 
 	if name := queryParams.Get("Name"); name != "" {
-		if productParams.Name == nil {
-			productParams.Name = new(string)
-		}
-		*productParams.Name = name
+		*userParams.Name = name
 	}
 
-	count, err := c.repository.DeleteAll(productParams)
+	count, err := c.repository.DeleteAll(userParams)
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -201,7 +184,7 @@ func (c *ProductController) DeleteAll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *ProductController) DeleteOne(w http.ResponseWriter, r *http.Request) {
+func (c *UserController) DeleteOne(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	count, err := c.repository.DeleteOne(id)
 	if err != nil {
@@ -215,22 +198,22 @@ func (c *ProductController) DeleteOne(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *ProductController) Update(w http.ResponseWriter, r *http.Request) {
+func (c *UserController) Update(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	var productParams ProductParams
-	err := json.NewDecoder(r.Body).Decode(&productParams)
+	var userParams UserParams
+	err := json.NewDecoder(r.Body).Decode(&userParams)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	product, err := c.repository.Update(id, productParams)
+	user, err := c.repository.Update(id, userParams)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound) // Did go through, none found
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(product.ToDTO()); err != nil {
+	if err := json.NewEncoder(w).Encode(user.ToDTO()); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

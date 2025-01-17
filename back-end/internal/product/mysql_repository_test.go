@@ -5,6 +5,7 @@ import (
 	"math"
 	"regexp"
 	"sipub-test/internal/product"
+	testhelper "sipub-test/pkg/test_helper"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -23,11 +24,11 @@ func TestCreateProduct(t *testing.T) {
 		repo.SetDB(db)
 
 		params := product.ProductParams{
-			IsActive:    boolPointer(true),
-			IsDeleted:   boolPointer(false),
-			WeightGrams: floatPointer(100),
-			Price:       floatPointer(19.99),
-			Name:        stringPointer("Test Product"),
+			IsActive:    testhelper.BoolPointer(true),
+			IsDeleted:   testhelper.BoolPointer(false),
+			WeightGrams: testhelper.FloatPointer(100),
+			Price:       testhelper.FloatPointer(19.99),
+			Name:        testhelper.StringPointer("Test Product"),
 		}
 
 		mock.ExpectExec(`INSERT INTO products`).
@@ -40,26 +41,6 @@ func TestCreateProduct(t *testing.T) {
 		// Won't check for id since it is created in the repository
 		assert.Equal(t, *params.IsActive, product.GetIsActive())
 		assert.Equal(t, *params.Price, product.GetPrice())
-	})
-
-	t.Run("InvalidCreateWithNullParams", func(t *testing.T) {
-		// Although controller validates incomming request, the repo adds a new
-		// protection layer to validate if the fields are nil so it doesn't
-		// insert into the database
-		db, _, err := sqlmock.New()
-		if err != nil {
-			t.Fatalf("failed to create mock DB: %v", err)
-		}
-		defer db.Close()
-
-		repo := &product.MySQLProductRepository{}
-		repo.SetDB(db)
-
-		params := product.ProductParams{} // All params are nil
-
-		_, err = repo.Create(params)
-
-		assert.Error(t, err, "Should return error for invalid product creation")
 	})
 }
 
@@ -106,7 +87,7 @@ func TestGetAllProducts(t *testing.T) {
 			WillReturnError(fmt.Errorf("failed to get products"))
 
 		// Will search for one with weight 10 and should return 0 found
-		filter := product.ProductParams{WeightGrams: floatPointer(10)}
+		filter := product.ProductParams{WeightGrams: testhelper.FloatPointer(10)}
 		products, err := repo.GetAll(filter)
 
 		assert.Error(t, err, "Should have no errors")
@@ -178,11 +159,11 @@ func TestUpdateProduct(t *testing.T) {
 		repo.SetDB(db)
 
 		newParams := product.ProductParams{
-			IsActive:    boolPointer(false),
-			IsDeleted:   boolPointer(true),
-			WeightGrams: floatPointer(200),
-			Price:       floatPointer(29.99),
-			Name:        stringPointer("Updated Product"),
+			IsActive:    testhelper.BoolPointer(false),
+			IsDeleted:   testhelper.BoolPointer(true),
+			WeightGrams: testhelper.FloatPointer(200),
+			Price:       testhelper.FloatPointer(29.99),
+			Name:        testhelper.StringPointer("Updated Product"),
 		}
 
 		// Create a new row
@@ -234,8 +215,8 @@ func TestUpdateProduct(t *testing.T) {
 
 		// Params with only some fields updated, others are nil
 		newParams := product.ProductParams{
-			IsActive: boolPointer(false),                         // This should update
-			Name:     stringPointer("Partially Updated Product"), // This should update
+			IsActive: testhelper.BoolPointer(false),                         // This should update
+			Name:     testhelper.StringPointer("Partially Updated Product"), // This should update
 		}
 
 		// Expect the `UPDATE` query with values including the updated fields and the unchanged fields
@@ -260,16 +241,4 @@ func TestUpdateProduct(t *testing.T) {
 		assert.Equal(t, float32(19.99), product.ToDTO().Price, "Price should remain unchanged")
 		assert.Equal(t, float32(100.0), product.ToDTO().WeightGrams, "Weight should remain unchanged")
 	})
-}
-
-func boolPointer(b bool) *bool {
-	return &b
-}
-
-func floatPointer(f float32) *float32 {
-	return &f
-}
-
-func stringPointer(s string) *string {
-	return &s
 }

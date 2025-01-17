@@ -284,16 +284,16 @@ func TestControllerDeleteAll(t *testing.T) {
 		}
 		defer db.Close()
 
-		controller := &product.ProductController{}
 		repo := &product.MySQLProductRepository{}
 		repo.SetDB(db)
+		controller := &product.ProductController{}
 		controller.SetRepository(repo)
 
 		mock.ExpectExec(`DELETE FROM products WHERE 1=1 AND name LIKE ?`).
 			WithArgs("%Test%").
-			WillReturnResult(sqlmock.NewResult(0, 3))
+			WillReturnResult(sqlmock.NewResult(0, 3)) // Simulate 3 rows deleted
 
-		r := httptest.NewRequest(http.MethodDelete, "http://localhost:8080/products?name=Test", nil)
+		r := httptest.NewRequest(http.MethodDelete, "http://localhost:8080/products?Name=Test", nil)
 		w := httptest.NewRecorder()
 
 		controller.DeleteAll(w, r)
@@ -303,7 +303,7 @@ func TestControllerDeleteAll(t *testing.T) {
 		var response uint
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Equal(t, uint(3), response)
+		assert.Equal(t, uint(3), response) // Assert that 3 rows were deleted
 	})
 }
 

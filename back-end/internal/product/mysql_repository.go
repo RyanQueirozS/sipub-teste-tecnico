@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"sipub-test/db"
+	"sipub-test/pkg/nilcheck"
 	"time"
 
 	"github.com/google/uuid"
@@ -49,9 +50,6 @@ func NewMySQLproductRepository() *MySQLProductRepository {
 }
 
 func (r *MySQLProductRepository) Create(params ProductParams) (ProductModel, error) {
-	if err := validateProductParams(params); err != nil {
-		return ProductModel{}, err
-	}
 	id := uuid.NewString()
 
 	// Round price to 2 decimal places, if not, there will be floating number
@@ -87,6 +85,14 @@ func (r *MySQLProductRepository) GetAll(filter ProductParams) ([]ProductModel, e
 	if filter.IsDeleted != nil {
 		query += " AND isDeleted = ?"
 		args = append(args, *filter.IsDeleted)
+	}
+	if filter.WeightGrams != nil {
+		query += " AND weightGrams = ?"
+		args = append(args, *filter.WeightGrams)
+	}
+	if filter.Price != nil {
+		query += " AND price = ?"
+		args = append(args, *filter.Price)
 	}
 	if filter.Name != nil {
 		query += " AND name LIKE ?"
@@ -169,11 +175,11 @@ func (r *MySQLProductRepository) Update(id string, newProduct ProductParams) (Pr
 	}
 	// This will check nil arguments and change only the non-nil ones
 	updatedProduct := ProductModel{
-		isActive:    ifNotNilBool(newProduct.IsActive, previousProduct.isActive),
-		isDeleted:   ifNotNilBool(newProduct.IsDeleted, previousProduct.isDeleted),
-		weightGrams: ifNotNilFloat32(newProduct.WeightGrams, previousProduct.weightGrams),
-		price:       ifNotNilFloat32(newProduct.Price, previousProduct.price),
-		name:        ifNotNilString(newProduct.Name, previousProduct.name),
+		isActive:    nilcheck.IfNotNilBool(newProduct.IsActive, previousProduct.isActive),
+		isDeleted:   nilcheck.IfNotNilBool(newProduct.IsDeleted, previousProduct.isDeleted),
+		weightGrams: nilcheck.IfNotNilFloat32(newProduct.WeightGrams, previousProduct.weightGrams),
+		price:       nilcheck.IfNotNilFloat32(newProduct.Price, previousProduct.price),
+		name:        nilcheck.IfNotNilString(newProduct.Name, previousProduct.name),
 	}
 	// Remove floating point innacuracy
 	roundedWeight := math.Round(float64(updatedProduct.weightGrams)*100) / 100
@@ -186,55 +192,4 @@ func (r *MySQLProductRepository) Update(id string, newProduct ProductParams) (Pr
 		return ProductModel{}, fmt.Errorf("failed to update product: %w", err)
 	}
 	return r.GetOne(id)
-}
-
-// Helper functions
-
-func validateProductParams(product ProductParams) error {
-	if product.Name == nil {
-		return errors.New("Invalid name")
-	}
-	if *product.Name == "" {
-		return errors.New("invalid Name")
-	}
-	if product.Price == nil {
-		return errors.New("Invalid Price")
-	}
-	if *product.Price <= 0 {
-		return errors.New("Invalid Price")
-	}
-	if product.IsActive == nil {
-		return errors.New("Invalid IsActive")
-	}
-	if product.IsDeleted == nil {
-		return errors.New("Invalid IsDeleted")
-	}
-	if product.WeightGrams == nil {
-		return errors.New("Invalid WeightGrams")
-	}
-	if *product.WeightGrams <= 0 {
-		return errors.New("Invalid WeightGrams")
-	}
-	return nil
-}
-
-func ifNotNilBool(newVal *bool, oldVal bool) bool {
-	if newVal != nil {
-		return *newVal
-	}
-	return oldVal
-}
-
-func ifNotNilFloat32(newVal *float32, oldVal float32) float32 {
-	if newVal != nil {
-		return *newVal
-	}
-	return oldVal
-}
-
-func ifNotNilString(newVal *string, oldVal string) string {
-	if newVal != nil {
-		return *newVal
-	}
-	return oldVal
 }

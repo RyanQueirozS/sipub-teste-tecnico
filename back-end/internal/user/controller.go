@@ -60,8 +60,8 @@ func (c *UserController) GetAll(w http.ResponseWriter, r *http.Request) {
 		if strings.ToLower(key) != "isactive" &&
 			strings.ToLower(key) != "isdeleted" &&
 			strings.ToLower(key) != "createdAt" &&
-			strings.ToLower(key) != "weightgrams" &&
-			strings.ToLower(key) != "price" &&
+			strings.ToLower(key) != "email" &&
+			strings.ToLower(key) != "cpf" &&
 			strings.ToLower(key) != "name" {
 			http.Error(w, fmt.Sprintf("Invalid query parameter: %s", key), http.StatusBadRequest)
 			return

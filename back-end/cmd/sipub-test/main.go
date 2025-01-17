@@ -8,6 +8,7 @@ import (
 	"sipub-test/internal/address"
 	product "sipub-test/internal/product"
 	"sipub-test/internal/user"
+	"sipub-test/internal/user_address"
 )
 
 const portNum string = ":8080"
@@ -32,6 +33,7 @@ func main() {
 		product.NewProductRouter(),
 		user.NewUserRouter(),
 		address.NewAddressRouter(),
+		user_address.NewUserAddressRouter(),
 	)
 	log.Println("Starting server...")
 	http.ListenAndServe(portNum, mux)

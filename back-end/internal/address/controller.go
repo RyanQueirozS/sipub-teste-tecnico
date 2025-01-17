@@ -61,9 +61,14 @@ func (c *AddressController) GetAll(w http.ResponseWriter, r *http.Request) {
 		if strings.ToLower(key) != "isactive" &&
 			strings.ToLower(key) != "isdeleted" &&
 			strings.ToLower(key) != "createdAt" &&
-			strings.ToLower(key) != "weightgrams" &&
-			strings.ToLower(key) != "price" &&
-			strings.ToLower(key) != "name" {
+			strings.ToLower(key) != "street" &&
+			strings.ToLower(key) != "number" &&
+			strings.ToLower(key) != "neighborhood" &&
+			strings.ToLower(key) != "city" &&
+			strings.ToLower(key) != "state" &&
+			strings.ToLower(key) != "country" &&
+			strings.ToLower(key) != "latitude" &&
+			strings.ToLower(key) != "longitude" {
 			http.Error(w, fmt.Sprintf("Invalid query parameter: %s", key), http.StatusBadRequest)
 			return
 		}

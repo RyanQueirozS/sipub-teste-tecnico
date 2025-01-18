@@ -56,30 +56,30 @@ type AddressModel struct {
 	name string
 }
 
-func (u *AddressModel) ToDTO() AddressDTO {
+func (a *AddressModel) ToDTO() AddressDTO {
 	dtoAddress := AddressDTO{
-		Id:           u.id,
-		CreatedAt:    u.createdAt,
-		Street:       u.street,
-		Number:       u.number,
-		Neighborhood: u.neighborhood,
-		Complement:   u.complement,
-		City:         u.city,
-		State:        u.state,
-		Country:      u.country,
-		Latitude:     u.latitude,
-		Longitude:    u.longitude,
-		Name:         u.name,
+		Id:           a.id,
+		CreatedAt:    a.createdAt,
+		Street:       a.street,
+		Number:       a.number,
+		Neighborhood: a.neighborhood,
+		Complement:   a.complement,
+		City:         a.city,
+		State:        a.state,
+		Country:      a.country,
+		Latitude:     a.latitude,
+		Longitude:    a.longitude,
+		Name:         a.name,
 	}
 	return dtoAddress
 }
 
-func (u *AddressModel) GetID() string {
-	return u.id
+func (a *AddressModel) GetID() string {
+	return a.id
 }
 
-func (u *AddressModel) GetIsActive() bool {
-	return u.isActive
+func (a *AddressModel) GetIsActive() bool {
+	return a.isActive
 }
 
 func (a *AddressModel) GetStreet() string {

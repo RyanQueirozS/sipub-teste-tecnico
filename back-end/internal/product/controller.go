@@ -161,10 +161,6 @@ func (c *ProductController) DeleteAll(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if createdAt := queryParams.Get("CreatedAt"); createdAt != "" {
-		*productParams.CreatedAt = createdAt
-	}
-
 	if weight := queryParams.Get("WeightGrams"); weight != "" {
 		weightValue, err := strconv.ParseFloat(weight, 32)
 		if err == nil {

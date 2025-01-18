@@ -1,23 +1,23 @@
-package address
+package delivery
 
 import (
 	"net/http"
 	"sipub-test/internal"
 )
 
-type AddressRouter struct {
+type DeliveryRouter struct {
 	baseEndPoint string
 	controller   internal.IController
 }
 
-func NewAddressRouter() AddressRouter {
-	router := AddressRouter{
-		controller: NewAddressController(),
+func NewDeliveryRouter() DeliveryRouter {
+	router := DeliveryRouter{
+		controller: NewDeliveryController(),
 	}
 	return router
 }
 
-func (r AddressRouter) Init(mux *http.ServeMux) {
+func (r DeliveryRouter) Init(mux *http.ServeMux) {
 	r.baseEndPoint = "/addresses"
 
 	r.create(mux)
@@ -28,26 +28,26 @@ func (r AddressRouter) Init(mux *http.ServeMux) {
 	r.update(mux)
 }
 
-func (r AddressRouter) create(mux *http.ServeMux) {
+func (r DeliveryRouter) create(mux *http.ServeMux) {
 	mux.HandleFunc("POST "+r.baseEndPoint, r.controller.Create)
 }
 
-func (r AddressRouter) getAll(mux *http.ServeMux) {
+func (r DeliveryRouter) getAll(mux *http.ServeMux) {
 	mux.HandleFunc("GET "+r.baseEndPoint, r.controller.GetAll)
 }
 
-func (r AddressRouter) getOne(mux *http.ServeMux) {
+func (r DeliveryRouter) getOne(mux *http.ServeMux) {
 	mux.HandleFunc("GET "+r.baseEndPoint+"/{id}", r.controller.GetOne)
 }
 
-func (r AddressRouter) deleteAll(mux *http.ServeMux) {
+func (r DeliveryRouter) deleteAll(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE "+r.baseEndPoint, r.controller.DeleteAll)
 }
 
-func (r AddressRouter) deleteOne(mux *http.ServeMux) {
+func (r DeliveryRouter) deleteOne(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE "+r.baseEndPoint+"/{id}", r.controller.DeleteOne)
 }
 
-func (r AddressRouter) update(mux *http.ServeMux) {
+func (r DeliveryRouter) update(mux *http.ServeMux) {
 	mux.HandleFunc("PUT "+r.baseEndPoint+"/{id}", r.controller.Update)
 }

@@ -48,10 +48,10 @@ func TestGetAllUserAddresses(t *testing.T) {
 		repo := &user_address.MySQLUserAddressRepository{}
 		repo.SetDB(db)
 
-		rows := sqlmock.NewRows([]string{"id", "userID", "addressID"}).
+		rows := sqlmock.NewRows([]string{"id", "user_id", "address_id"}).
 			AddRow("123", "user-123", "address-456")
 
-		mock.ExpectQuery(`SELECT id, userID, addressID FROM user_address`).
+		mock.ExpectQuery(`SELECT id, user_id, address_id FROM user_address`).
 			WillReturnRows(rows)
 
 		filter := user_address.UserAddressParams{UserID: "user-123"}
@@ -72,7 +72,7 @@ func TestGetAllUserAddresses(t *testing.T) {
 		repo.SetDB(db)
 
 		// Should return "failed to get user_address"
-		mock.ExpectQuery(`SELECT id, userID, addressID FROM user_address`).
+		mock.ExpectQuery(`SELECT id, user_iD, address_id FROM user_address`).
 			WillReturnError(fmt.Errorf("failed to get user_address"))
 
 		filter := user_address.UserAddressParams{UserID: "nonexistent-user-id"}
@@ -93,10 +93,10 @@ func TestGetUserAddressByID(t *testing.T) {
 	repo := &user_address.MySQLUserAddressRepository{}
 	repo.SetDB(db)
 
-	rows := sqlmock.NewRows([]string{"id", "userID", "addressID"}).
+	rows := sqlmock.NewRows([]string{"id", "user_id", "addressID"}).
 		AddRow("123", "user-123", "address-456")
 
-	mock.ExpectQuery(`SELECT id, userID, addressID FROM user_address WHERE id = ?`).
+	mock.ExpectQuery(`SELECT id, user_id, address_id FROM user_address WHERE id = ?`).
 		WithArgs("123").
 		WillReturnRows(rows)
 

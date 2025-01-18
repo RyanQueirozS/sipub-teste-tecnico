@@ -27,7 +27,7 @@ func (r *MySQLDeliveryRepository) createNewDeliveryTableIfNoneExists() {
         product_id char(36) NOT NULL,
         product_amount UNSIGNED INT NOT NULL,
         FOREIGN KEY (order_id) REFERENCES order(id) ON DELETE CASCADE,
-        FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
         PRIMARY KEY (id)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
 	// https://dev.mysql.com/doc/refman/8.4/en/innodb-benefits.html

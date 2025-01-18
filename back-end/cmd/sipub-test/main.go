@@ -7,6 +7,7 @@ import (
 	internal "sipub-test/internal"
 	"sipub-test/internal/address"
 	"sipub-test/internal/delivery"
+	"sipub-test/internal/delivery_product"
 	product "sipub-test/internal/product"
 	"sipub-test/internal/user"
 	"sipub-test/internal/user_address"
@@ -36,6 +37,7 @@ func main() {
 		address.NewAddressRouter(),
 		user_address.NewUserAddressRouter(),
 		delivery.NewDeliveryRouter(),
+		delivery_product.NewDeliveryProductRouter(),
 	)
 	log.Println("Starting server...")
 	http.ListenAndServe(portNum, mux)

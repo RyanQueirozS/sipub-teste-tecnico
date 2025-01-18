@@ -9,8 +9,8 @@ type DeliveryProductValidator struct{}
 // Helper functions
 
 func (v *DeliveryProductValidator) Validate(delivery DeliveryProductParams) error {
-	if delivery.OrderID == nil {
-		return errors.New("Empty OrderID")
+	if delivery.DeliveryID == nil {
+		return errors.New("Empty DeliveryID")
 	}
 	return nil
 }

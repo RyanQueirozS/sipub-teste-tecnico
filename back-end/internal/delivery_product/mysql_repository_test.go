@@ -23,19 +23,19 @@ func TestCreateDeliveryProduct(t *testing.T) {
 		repo.SetDB(db)
 
 		params := delivery_product.DeliveryProductParams{
-			OrderID:       testhelper.StringPointer("order-123"),
+			DeliveryID:       testhelper.StringPointer("order-123"),
 			ProductID:     testhelper.StringPointer("product-123"),
 			ProductAmount: testhelper.UintPointer(5),
 		}
 
-		mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO delivery_product (id, order_id, product_id, product_amount) VALUES (?, ?, ?, ?)`)).
+		mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO delivery_product (id, delivery_id, product_id, product_amount) VALUES (?, ?, ?, ?)`)).
 			WithArgs(sqlmock.AnyArg(), "order-123", "product-123", 5).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		result, err := repo.Create(params)
 
 		assert.NoError(t, err, "Shouldn't contain any errors")
-		assert.Equal(t, "order-123", result.ToDTO().OrderID, "OrderID should match")
+		assert.Equal(t, "order-123", result.ToDTO().DeliveryID, "DeliveryID should match")
 		assert.Equal(t, "product-123", result.ToDTO().ProductID, "ProductID should match")
 		assert.Equal(t, uint(5), result.ToDTO().ProductAmount, "ProductAmount should match")
 	})
@@ -52,10 +52,10 @@ func TestGetAllDeliveryProducts(t *testing.T) {
 		repo := &delivery_product.MySQLDeliveryRepository{}
 		repo.SetDB(db)
 
-		rows := sqlmock.NewRows([]string{"id", "order_id", "product_id", "product_amount"}).
+		rows := sqlmock.NewRows([]string{"id", "delivery_id", "product_id", "product_amount"}).
 			AddRow("delivery-123", "order-123", "product-123", 5)
 
-		mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, order_id, product_id, product_amount FROM delivery_product WHERE 1=1`)).
+		mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, delivery_id, product_id, product_amount FROM delivery_product WHERE 1=1`)).
 			WillReturnRows(rows)
 
 		filter := delivery_product.DeliveryProductParams{}
@@ -63,7 +63,7 @@ func TestGetAllDeliveryProducts(t *testing.T) {
 
 		assert.NoError(t, err, "Shouldn't contain any errors")
 		assert.Len(t, results, 1, "Result length should be 1")
-		assert.Equal(t, "order-123", results[0].ToDTO().OrderID, "OrderID should match")
+		assert.Equal(t, "order-123", results[0].ToDTO().DeliveryID, "DeliveryID should match")
 		assert.Equal(t, "product-123", results[0].ToDTO().ProductID, "ProductID should match")
 	})
 }
@@ -78,10 +78,10 @@ func TestGetDeliveryProductByID(t *testing.T) {
 	repo := &delivery_product.MySQLDeliveryRepository{}
 	repo.SetDB(db)
 
-	rows := sqlmock.NewRows([]string{"id", "order_id", "product_id", "product_amount"}).
+	rows := sqlmock.NewRows([]string{"id", "delivery_id", "product_id", "product_amount"}).
 		AddRow("delivery-123", "order-123", "product-123", 5)
 
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, order_id, product_id, product_amount FROM delivery_product WHERE id = ?`)).
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, delivery_id, product_id, product_amount FROM delivery_product WHERE id = ?`)).
 		WithArgs("delivery-123").
 		WillReturnRows(rows)
 
@@ -89,7 +89,7 @@ func TestGetDeliveryProductByID(t *testing.T) {
 
 	assert.NoError(t, err, "Shouldn't contain any errors")
 	assert.Equal(t, "delivery-123", result.ToDTO().Id, "ID should match")
-	assert.Equal(t, "order-123", result.ToDTO().OrderID, "OrderID should match")
+	assert.Equal(t, "order-123", result.ToDTO().DeliveryID, "DeliveryID should match")
 	assert.Equal(t, "product-123", result.ToDTO().ProductID, "ProductID should match")
 }
 

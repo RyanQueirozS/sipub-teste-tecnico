@@ -1,4 +1,4 @@
-package delivery_product
+package user_delivery
 
 import (
 	"encoding/json"
@@ -7,22 +7,22 @@ import (
 	"strings"
 )
 
-type DeliveryProductController struct {
+type UserDeliveryController struct {
 	// TODO
-	repository IDeliveryProductRepository
+	repository IUserDeliveryRepository
 }
 
 // Used for testing
-func (c *DeliveryProductController) SetRepository(repo IDeliveryProductRepository) {
+func (c *UserDeliveryController) SetRepository(repo IUserDeliveryRepository) {
 	c.repository = repo
 }
 
-func NewDeliveryProductController() *DeliveryProductController {
-	return &DeliveryProductController{repository: NewMySQLDeliveryRepository()}
+func NewUserDeliveryController() *UserDeliveryController {
+	return &UserDeliveryController{repository: NewMySQLUserDeliveryRepository()}
 }
 
-func (c *DeliveryProductController) Create(w http.ResponseWriter, r *http.Request) {
-	var deliveryParam DeliveryProductParams
+func (c *UserDeliveryController) Create(w http.ResponseWriter, r *http.Request) {
+	var deliveryParam UserDeliveryParams
 	err := json.NewDecoder(r.Body).Decode(&deliveryParam)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -46,11 +46,11 @@ func (c *DeliveryProductController) Create(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func (c *DeliveryProductController) GetAll(w http.ResponseWriter, r *http.Request) {
-	var deliveryParams DeliveryProductParams
+func (c *UserDeliveryController) GetAll(w http.ResponseWriter, r *http.Request) {
+	var deliveryParams UserDeliveryParams
 	queryParams := r.URL.Query()
 
-	// First it checks to see if the values in the querystring are valid. IT ONLY CHECKS FOR ORDER_ID
+	// First it checks to see if the values in the querystring are valid. IT ONLY CHECKS FOR DELIVERY_ID
 	for key := range queryParams {
 		if strings.ToLower(key) != "deliveryid" {
 			http.Error(w, fmt.Sprintf("Invalid query parameter: %s", key), http.StatusBadRequest)
@@ -59,7 +59,7 @@ func (c *DeliveryProductController) GetAll(w http.ResponseWriter, r *http.Reques
 	}
 
 	// If the values are valid it will check what each value is
-	if deliveryID := queryParams.Get("DeliveryID"); deliveryID != "" {
+	if deliveryID := queryParams.Get("deliveryID"); deliveryID != "" {
 		*deliveryParams.DeliveryID = deliveryID
 	}
 
@@ -72,7 +72,7 @@ func (c *DeliveryProductController) GetAll(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	dtoFoundDeliveries := []DeliveryProductDTO{}
+	dtoFoundDeliveries := []UserDeliveryDTO{}
 	for i := 0; i < len(foundDeliveryes); i++ {
 		dtoFoundDeliveries = append(dtoFoundDeliveries, foundDeliveryes[i].ToDTO())
 	}
@@ -83,7 +83,7 @@ func (c *DeliveryProductController) GetAll(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func (c *DeliveryProductController) GetOne(w http.ResponseWriter, r *http.Request) {
+func (c *UserDeliveryController) GetOne(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	delivery, err := c.repository.GetOne(id)
 	if err != nil {
@@ -97,8 +97,8 @@ func (c *DeliveryProductController) GetOne(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func (c *DeliveryProductController) DeleteAll(w http.ResponseWriter, r *http.Request) {
-	var deliveryParams DeliveryProductParams
+func (c *UserDeliveryController) DeleteAll(w http.ResponseWriter, r *http.Request) {
+	var deliveryParams UserDeliveryParams
 	queryParams := r.URL.Query()
 
 	if deliveryID := queryParams.Get("AddressID"); deliveryID != "" {
@@ -117,7 +117,7 @@ func (c *DeliveryProductController) DeleteAll(w http.ResponseWriter, r *http.Req
 	}
 }
 
-func (c *DeliveryProductController) DeleteOne(w http.ResponseWriter, r *http.Request) {
+func (c *UserDeliveryController) DeleteOne(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	count, err := c.repository.DeleteOne(id)
 	if err != nil {
@@ -131,7 +131,7 @@ func (c *DeliveryProductController) DeleteOne(w http.ResponseWriter, r *http.Req
 	}
 }
 
-func (c *DeliveryProductController) Update(w http.ResponseWriter, r *http.Request) {
+func (c *UserDeliveryController) Update(w http.ResponseWriter, r *http.Request) {
 	// This needs to be implemented because of the interface, altough it won't
 	// be used since the delivery-product shouldn't be updated
 }

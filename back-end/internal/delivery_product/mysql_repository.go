@@ -23,10 +23,10 @@ func (r *MySQLDeliveryRepository) createNewDeliveryTableIfNoneExists() {
 	createTableQuery := `
 	CREATE TABLE IF NOT EXISTS delivery_product (
 		id CHAR(36) NOT NULL,
-        order_id char(36) NOT NULL,
+        delivery_id char(36) NOT NULL,
         product_id char(36) NOT NULL,
         product_amount UNSIGNED INT NOT NULL,
-        FOREIGN KEY (order_id) REFERENCES order(id) ON DELETE CASCADE,
+        FOREIGN KEY (delivery_id) REFERENCES order(id) ON DELETE CASCADE,
         FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
         PRIMARY KEY (id)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
@@ -52,14 +52,14 @@ func (r *MySQLDeliveryRepository) Create(params DeliveryProductParams) (Delivery
 	// Fields might be nil, but they need to be passed empty/defaulted non nil fields
 	model := DeliveryProductModel{
 		id:            id,
-		orderID:       *params.OrderID,
+		deliveryID:    *params.DeliveryID,
 		productID:     *params.ProductID,
 		productAmount: *params.ProductAmount,
 	}
 
-	query := `INSERT INTO delivery_product (id, order_id, product_id, product_amount) VALUES (?, ?, ?, ?)`
+	query := `INSERT INTO delivery_product (id, delivery_id, product_id, product_amount) VALUES (?, ?, ?, ?)`
 
-	_, err := r.db.Exec(query, id, model.orderID, model.productID, model.productAmount) // todo
+	_, err := r.db.Exec(query, id, model.deliveryID, model.productID, model.productAmount) // todo
 	if err != nil {
 		fmt.Println(err)
 		return DeliveryProductModel{}, fmt.Errorf("failed to create delivery: %w", err)
@@ -69,13 +69,13 @@ func (r *MySQLDeliveryRepository) Create(params DeliveryProductParams) (Delivery
 }
 
 func (r *MySQLDeliveryRepository) GetAll(filter DeliveryProductParams) ([]DeliveryProductModel, error) {
-	query := `SELECT id, order_id, product_id, product_amount FROM delivery_product WHERE 1=1`
+	query := `SELECT id, delivery_id, product_id, product_amount FROM delivery_product WHERE 1=1`
 	args := []interface{}{}
 
-	// Only looks for orderid
-	if filter.OrderID != nil {
-		query += " AND order_id = ?"
-		args = append(args, *filter.OrderID)
+	// Only looks for deliveryid
+	if filter.DeliveryID != nil {
+		query += " AND delivery_id = ?"
+		args = append(args, *filter.DeliveryID)
 	}
 
 	rows, err := r.db.Query(query, args...)
@@ -87,7 +87,7 @@ func (r *MySQLDeliveryRepository) GetAll(filter DeliveryProductParams) ([]Delive
 	var deliveryProduct []DeliveryProductModel
 	for rows.Next() {
 		var delivery DeliveryProductModel
-		err := rows.Scan(&delivery.id, &delivery.orderID, &delivery.productID, &delivery.productAmount) // todo
+		err := rows.Scan(&delivery.id, &delivery.deliveryID, &delivery.productID, &delivery.productAmount) // todo
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan deliveryProduct: %w", err)
 		}
@@ -98,11 +98,11 @@ func (r *MySQLDeliveryRepository) GetAll(filter DeliveryProductParams) ([]Delive
 }
 
 func (r *MySQLDeliveryRepository) GetOne(id string) (DeliveryProductModel, error) {
-	query := `SELECT id, order_id, product_id, product_amount FROM delivery_product WHERE id = ?`
+	query := `SELECT id, delivery_id, product_id, product_amount FROM delivery_product WHERE id = ?`
 
 	var delivery DeliveryProductModel
 	row := r.db.QueryRow(query, id)
-	err := row.Scan(&delivery.id, &delivery.orderID, &delivery.productID, &delivery.productAmount)
+	err := row.Scan(&delivery.id, &delivery.deliveryID, &delivery.productID, &delivery.productAmount)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return DeliveryProductModel{}, fmt.Errorf("delivery not found")
@@ -129,9 +129,9 @@ func (r *MySQLDeliveryRepository) DeleteAll(filter DeliveryProductParams) (uint,
 	query := `DELETE FROM delivery_product WHERE 1=1`
 	args := []interface{}{}
 
-	if filter.OrderID != nil {
+	if filter.DeliveryID != nil {
 		query += " AND user_id = ?"
-		args = append(args, *filter.OrderID)
+		args = append(args, *filter.DeliveryID)
 	}
 
 	res, err := r.db.Exec(query, args...)

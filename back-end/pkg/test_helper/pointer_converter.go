@@ -1,5 +1,9 @@
 package testhelper
 
+func UintPointer(u uint) *uint {
+	return &u
+}
+
 func BoolPointer(b bool) *bool {
 	return &b
 }

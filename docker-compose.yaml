@@ -14,6 +14,17 @@ services:
         # the depends on, that is why this condition exists
         condition: service_healthy  
 
+  front-end:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    ports:
+      - "3010:3000"
+    volumes:
+      - ./front-end:/app
+    depends_on:
+      - back-end
+
   # This info shouldn't be public, but because this isn't going to production it
   # doesn't really matter
   db:

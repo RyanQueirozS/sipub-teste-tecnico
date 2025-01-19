@@ -27,6 +27,7 @@ func (c *AddressController) Create(w http.ResponseWriter, r *http.Request) {
 	var addressParam AddressParams
 	err := json.NewDecoder(r.Body).Decode(&addressParam)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -39,6 +40,7 @@ func (c *AddressController) Create(w http.ResponseWriter, r *http.Request) {
 
 	createdAddress, err := c.repository.Create(addressParam)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -47,6 +49,7 @@ func (c *AddressController) Create(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 
 	if err := json.NewEncoder(w).Encode(createdAddress.ToDTO()); err != nil {
+		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

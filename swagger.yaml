@@ -1,0 +1,576 @@
+openapi: 3.0.0
+info:
+  title: Delivery Management API
+  version: 1.0.0
+
+tags:
+  - name: "Address"
+    description: "The addresses of the users"
+  - name: "Delivery"
+    description: "The deliveries containing the user and address info"
+  - name: "User"
+    description: "The user information"
+  - name: "Product"
+    description: "The product information"
+  - name: "Shopping"
+    description: "Where the user/delivery information is stored"
+
+
+paths:
+  /address:
+    get:
+      tags: 
+        - "Address"
+      summary: Get all addresses
+      operationId: getAllAddresses
+      responses:
+        '200':
+          description: A list of addresses
+    post:
+      tags: 
+        - "Address"
+      summary: Create a new address
+      operationId: createAddress
+      responses:
+        '201':
+          description: Address created successfully
+
+  /address/{id}:
+    get:
+      tags: 
+        - "Address"
+      summary: Get an address by ID
+      operationId: getAddressById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Address details
+    put:
+      tags: 
+        - "Address"
+      summary: Update an address by ID
+      operationId: updateAddressById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Address updated successfully
+    delete:
+      tags: 
+        - "Address"
+      summary: Delete an address by ID
+      operationId: deleteAddressById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Address deleted successfully
+
+  /delivery:
+    get:
+      tags: 
+        - "Address"
+      summary: Get all deliveries
+      operationId: getAllDeliveries
+      responses:
+        '200':
+          description: A list of deliveries
+    post:
+      tags: 
+        - "Delivery"
+      summary: Create a new delivery
+      operationId: createDelivery
+      responses:
+        '201':
+          description: Delivery created successfully
+
+  /delivery/{id}:
+    get:
+      tags: 
+        - "Delivery"
+      summary: Get a delivery by ID
+      operationId: getDeliveryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delivery details
+    put:
+      tags: 
+        - "Delivery"
+      summary: Update a delivery by ID
+      operationId: updateDeliveryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delivery updated successfully
+    delete:
+      tags: 
+        - "Delivery"
+      summary: Delete a delivery by ID
+      operationId: deleteDeliveryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Delivery deleted successfully
+
+  /delivery_product:
+    get:
+      tags: 
+        - "Delivery"
+      summary: Get all delivery products
+      operationId: getAllDeliveryProducts
+      responses:
+        '200':
+          description: A list of delivery products
+    post:
+      tags: 
+        - "Delivery"
+      summary: Create a new delivery product
+      operationId: createDeliveryProduct
+      responses:
+        '201':
+          description: Delivery product created successfully
+
+  /delivery_product/{id}:
+    get:
+      tags: 
+        - "Delivery"
+      summary: Get a delivery product by ID
+      operationId: getDeliveryProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delivery product details
+    put:
+      tags: 
+        - "Delivery"
+      summary: Update a delivery product by ID
+      operationId: updateDeliveryProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delivery product updated successfully
+    delete:
+      tags: 
+        - "Delivery"
+      summary: Delete a delivery product by ID
+      operationId: deleteDeliveryProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Delivery product deleted successfully
+
+  /payment:
+    get:
+      tags: 
+        - "Shopping"
+      summary: Get all payments
+      operationId: getAllPayments
+      responses:
+        '200':
+          description: A list of payments
+    post:
+      tags: 
+        - "Shopping"
+      summary: Create a new payment
+      operationId: createPayment
+      responses:
+        '201':
+          description: Payment created successfully
+
+  /payment/{id}:
+    get:
+      tags: 
+        - "Shopping"
+      summary: Get a payment by ID
+      operationId: getPaymentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment details
+    put:
+      tags: 
+        - "Shopping"
+      summary: Update a payment by ID
+      operationId: updatePaymentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment updated successfully
+    delete:
+      tags: 
+        - "Shopping"
+      summary: Delete a payment by ID
+      operationId: deletePaymentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Payment deleted successfully
+
+  /product:
+    get:
+      tags: 
+        - "Product"
+      summary: Get all products
+      operationId: getAllProducts
+      responses:
+        '200':
+          description: A list of products
+    post:
+      tags: 
+        - "Product"
+      summary: Create a new product
+      operationId: createProduct
+      responses:
+        '201':
+          description: Product created successfully
+
+  /product/{id}:
+    get:
+      tags: 
+        - "Product"
+      summary: Get a product by ID
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product details
+    put:
+      tags: 
+        - "Product"
+      summary: Update a product by ID
+      operationId: updateProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product updated successfully
+    delete:
+      tags: 
+        - "Product"
+      summary: Delete a product by ID
+      operationId: deleteProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Product deleted successfully
+
+  /shopping_cart:
+    get:
+      tags: 
+        - "Shopping"
+      summary: Get all shopping carts
+      operationId: getAllShoppingCarts
+      responses:
+        '200':
+          description: A list of shopping carts
+    post:
+      tags: 
+        - "Shopping"
+      summary: Create a new shopping cart
+      operationId: createShoppingCart
+      responses:
+        '201':
+          description: Shopping cart created successfully
+
+  /shopping_cart/{id}:
+    get:
+      tags: 
+        - "Shopping"
+      summary: Get a shopping cart by ID
+      operationId: getShoppingCartById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Shopping cart details
+    put:
+      tags: 
+        - "Shopping"
+      summary: Update a shopping cart by ID
+      operationId: updateShoppingCartById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Shopping cart updated successfully
+    delete:
+      tags: 
+        - "Shopping"
+      summary: Delete a shopping cart by ID
+      operationId: deleteShoppingCartById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Shopping cart deleted successfully
+
+  /user:
+    get:
+      tags: 
+        - "User"
+      summary: Get all users
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: A list of users
+    post:
+      tags: 
+        - "User"
+      summary: Create a new user
+      operationId: createUser
+      responses:
+        '201':
+          description: User created successfully
+
+  /user/{id}:
+    get:
+      tags: 
+        - "User"
+      summary: Get a user by ID
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+    put:
+      tags: 
+        - "User"
+      summary: Update a user by ID
+      operationId: updateUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User updated successfully
+    delete:
+      tags: 
+        - "User"
+      summary: Delete a user by ID
+      operationId: deleteUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted successfully
+
+  /user_address:
+    get:
+      tags: 
+        - "User"
+      summary: Get all user addresses
+      operationId: getAllUserAddresses
+      responses:
+        '200':
+          description: A list of user addresses
+    post:
+      tags: 
+        - "User"
+      summary: Create a new user address
+      operationId: createUserAddress
+      responses:
+        '201':
+          description: User address created successfully
+
+  /user_address/{id}:
+    get:
+      tags: 
+        - "User"
+      summary: Get a user address by ID
+      operationId: getUserAddressById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User address details
+    put:
+      tags: 
+        - "User"
+      summary: Update a user address by ID
+      operationId: updateUserAddressById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User address updated successfully
+    delete:
+      tags: 
+        - "User"
+      summary: Delete a user address by ID
+      operationId: deleteUserAddressById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User address deleted successfully
+
+  /user_delivery:
+    get:
+      tags: 
+        - "User"
+      summary: Get all user deliveries
+      operationId: getAllUserDeliveries
+      responses:
+        '200':
+          description: A list of user deliveries
+    post:
+      tags: 
+        - "User"
+      summary: Create a new user delivery
+      operationId: createUserDelivery
+      responses:
+        '201':
+          description: User delivery created successfully
+
+  /user_delivery/{id}:
+    get:
+      tags: 
+        - "User"
+      summary: Get a user delivery by ID
+      operationId: getUserDeliveryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User delivery details
+    put:
+      tags: 
+        - "User"
+      summary: Update a user delivery by ID
+      operationId: updateUserDeliveryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User delivery updated successfully
+    delete:
+      tags: 
+        - "User"
+      summary: Delete a user delivery by ID
+      operationId: deleteUserDeliveryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User delivery deleted successfully

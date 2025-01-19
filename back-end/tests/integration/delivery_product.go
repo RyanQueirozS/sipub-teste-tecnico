@@ -25,11 +25,11 @@ func TestDeliveryProductController_Create(t *testing.T) {
 		controller.SetRepository(repo)
 
 		mock.ExpectExec(`INSERT INTO delivery_product`).
-			WithArgs(sqlmock.AnyArg(), "order-id", "product-id", 10).
+			WithArgs(sqlmock.AnyArg(), "delivery-id", "product-id", 10).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		requestBody := `{
-			"OrderID": "order-id",
+			"DeliveryID": "delivery-id",
 			"ProductID": "product-id",
 			"ProductAmount": 10
 		}`
@@ -42,7 +42,7 @@ func TestDeliveryProductController_Create(t *testing.T) {
 		var response delivery_product.DeliveryProductDTO
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Equal(t, "order-id", response.OrderID)
+		assert.Equal(t, "delivery-id", response.DeliveryID)
 		assert.Equal(t, "product-id", response.ProductID)
 		assert.Equal(t, 10, response.ProductAmount)
 		assert.NoError(t, mock.ExpectationsWereMet())
@@ -58,7 +58,7 @@ func TestDeliveryProductController_Create(t *testing.T) {
 		repo.SetDB(db)
 		controller.SetRepository(repo)
 
-		requestBody := `{"OrderID": "order-id"}` // Missing required fields
+		requestBody := `{"DeliveryID": "delivery-id"}` // Missing required fields
 		r := httptest.NewRequest(http.MethodPost, "/delivery-product", bytes.NewReader([]byte(requestBody)))
 		w := httptest.NewRecorder()
 
@@ -79,10 +79,10 @@ func TestDeliveryProductController_GetAll(t *testing.T) {
 		repo.SetDB(db)
 		controller.SetRepository(repo)
 
-		rows := sqlmock.NewRows([]string{"id", "order_id", "product_id", "product_amount"}).
-			AddRow("id-1", "order-id", "product-id", 10)
+		rows := sqlmock.NewRows([]string{"id", "delivery_id", "product_id", "product_amount"}).
+			AddRow("id-1", "delivery-id", "product-id", 10)
 
-		mock.ExpectQuery(`SELECT id, order_id, product_id, product_amount FROM delivery_product WHERE 1=1`).
+		mock.ExpectQuery(`SELECT id, delivery_id, product_id, product_amount FROM delivery_product WHERE 1=1`).
 			WillReturnRows(rows)
 
 		r := httptest.NewRequest(http.MethodGet, "/delivery-product", nil)
@@ -95,7 +95,7 @@ func TestDeliveryProductController_GetAll(t *testing.T) {
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
 		assert.Len(t, response, 1)
-		assert.Equal(t, "order-id", response[0].OrderID)
+		assert.Equal(t, "delivery-id", response[0].DeliveryID)
 		assert.Equal(t, "product-id", response[0].ProductID)
 		assert.Equal(t, 10, response[0].ProductAmount)
 		assert.NoError(t, mock.ExpectationsWereMet())
@@ -132,10 +132,10 @@ func TestDeliveryProductController_GetOne(t *testing.T) {
 		controller.SetRepository(repo)
 
 		id := "123e4567-e89b-12d3-a456-426614174000"
-		row := sqlmock.NewRows([]string{"id", "order_id", "product_id", "product_amount"}).
-			AddRow(id, "order-id", "product-id", 10)
+		row := sqlmock.NewRows([]string{"id", "delivery_id", "product_id", "product_amount"}).
+			AddRow(id, "delivery-id", "product-id", 10)
 
-		mock.ExpectQuery(`SELECT id, order_id, product_id, product_amount FROM delivery_product WHERE id = ?`).
+		mock.ExpectQuery(`SELECT id, delivery_id, product_id, product_amount FROM delivery_product WHERE id = ?`).
 			WithArgs(id).
 			WillReturnRows(row)
 
@@ -149,7 +149,7 @@ func TestDeliveryProductController_GetOne(t *testing.T) {
 		var response delivery_product.DeliveryProductDTO
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Equal(t, "order-id", response.OrderID)
+		assert.Equal(t, "delivery-id", response.DeliveryID)
 	})
 
 	t.Run("ShouldReturnNotFound", func(t *testing.T) {
@@ -163,7 +163,7 @@ func TestDeliveryProductController_GetOne(t *testing.T) {
 		controller.SetRepository(repo)
 
 		id := "non-existent-id"
-		mock.ExpectQuery(`SELECT id, order_id, product_id, product_amount FROM delivery_product WHERE id = ?`).
+		mock.ExpectQuery(`SELECT id, delivery_id, product_id, product_amount FROM delivery_product WHERE id = ?`).
 			WithArgs(id).
 			WillReturnError(sql.ErrNoRows)
 

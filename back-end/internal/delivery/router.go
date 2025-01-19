@@ -18,7 +18,7 @@ func NewDeliveryRouter() DeliveryRouter {
 }
 
 func (r DeliveryRouter) Init(mux *http.ServeMux) {
-	r.baseEndPoint = "/addresses"
+	r.baseEndPoint = "/deliveries"
 
 	r.create(mux)
 	r.getAll(mux)

@@ -26,7 +26,7 @@ func (r *MySQLUserDeliveryRepository) createNewUserDeliveryTableIfNoneExists() {
         delivery_id char(36) NOT NULL,
         user_id char(36) NOT NULL,
         FOREIGN KEY (delivery_id) REFERENCES deliveries(id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         PRIMARY KEY (id)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
 	// https://dev.mysql.com/doc/refman/8.4/en/innodb-benefits.html

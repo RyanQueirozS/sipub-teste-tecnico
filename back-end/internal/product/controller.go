@@ -27,6 +27,7 @@ func (c *ProductController) Create(w http.ResponseWriter, r *http.Request) {
 	var productParam ProductParams
 	err := json.NewDecoder(r.Body).Decode(&productParam)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

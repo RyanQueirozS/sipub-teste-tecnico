@@ -25,9 +25,9 @@ func (r *MySQLShoppingCartRepository) createNewShoppingCartTableIfNoneExists() {
 		id CHAR(36) NOT NULL,
         user_id CHAR(36) NOT NULL,
         product_id char(36) NOT NULL,
-        product_amount UNSIGNED INT NOT NULL,
+        product_amount INT UNSIGNED NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
         PRIMARY KEY (id)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
 	// https://dev.mysql.com/doc/refman/8.4/en/innodb-benefits.html

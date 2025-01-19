@@ -21,11 +21,13 @@ func (r *MySQLUserAddressRepository) createNewUserTableIfNoneExists() {
 	r.db = db.GetDB()
 
 	createTableQuery := `
-    CREATE TABLE IF NOT EXISTS user_address ( id CHAR(36) NOT NULL,
+    CREATE TABLE IF NOT EXISTS user_address (
+        id CHAR(36) NOT NULL,
         user_id char(36) NOT NULL,
         address_id char(36) NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (address_id) REFERENCES addresses(id) ON DELETE CASCADE
+        FOREIGN KEY (address_id) REFERENCES addresses(id) ON DELETE CASCADE,
+        PRIMARY KEY (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
 	// https://dev.mysql.com/doc/refman/8.4/en/innodb-benefits.html
 	// Mainly using InnoDB because it supports foreing keys

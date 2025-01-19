@@ -18,7 +18,7 @@ func NewShoppingCartRouter() ShoppingCartRouter {
 }
 
 func (r ShoppingCartRouter) Init(mux *http.ServeMux) {
-	r.baseEndPoint = "/addresses"
+	r.baseEndPoint = "/cart"
 
 	r.create(mux)
 	r.getAll(mux)

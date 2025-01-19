@@ -8,9 +8,14 @@ import (
 	"sipub-test/internal/address"
 	"sipub-test/internal/delivery"
 	"sipub-test/internal/delivery_product"
-	product "sipub-test/internal/product"
+	"sipub-test/internal/payment"
+	"sipub-test/internal/product"
+	"sipub-test/internal/shopping_cart"
 	"sipub-test/internal/user"
 	"sipub-test/internal/user_address"
+	"sipub-test/internal/user_delivery"
+
+	"github.com/rs/cors"
 )
 
 const portNum string = ":8080"
@@ -30,15 +35,25 @@ func main() {
 	}
 	defer db.CloseDB()
 
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders: []string{"Content-Type"},
+	})
 	mux := http.NewServeMux()
 	RouterInitializeAll(mux,
-		product.NewProductRouter(),
-		user.NewUserRouter(),
 		address.NewAddressRouter(),
-		user_address.NewUserAddressRouter(),
 		delivery.NewDeliveryRouter(),
 		delivery_product.NewDeliveryProductRouter(),
+		payment.NewPaymentRouter(),
+		product.NewProductRouter(),
+		shopping_cart.NewShoppingCartRouter(),
+		user.NewUserRouter(),
+		user_address.NewUserAddressRouter(),
+		user_delivery.NewUserDeliveryRouter(),
 	)
+	handler := corsHandler.Handler(mux)
+
 	log.Println("Starting server...")
-	http.ListenAndServe(portNum, mux)
+	http.ListenAndServe(portNum, handler)
 }

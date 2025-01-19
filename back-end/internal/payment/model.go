@@ -14,7 +14,7 @@ type PaymentDTO struct {
 	Id         string  `json:"Id"`
 	IsDeleted  bool    `json:"IsDeleted"`
 	CreatedAt  string  `json:"CreatedAt"`
-	DeliveryID string  `json:"OrderID"`
+	DeliveryID string  `json:"DeliveryID"`
 	Value      float32 `json:"Value"`
 }
 

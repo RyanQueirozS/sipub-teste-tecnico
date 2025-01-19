@@ -1,0 +1,50 @@
+services:
+  back-end:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+      target: builder
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./back-end:/app
+    depends_on:
+      db:
+        # Sometimes the backend server starts before the database, even with
+        # the depends on, that is why this condition exists
+        condition: service_healthy  
+
+  front-end:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    ports:
+      - "3010:3000"
+    volumes:
+      - ./front-end:/app
+    depends_on:
+      - back-end
+
+  # This info shouldn't be public, but because this isn't going to production it
+  # doesn't really matter
+  db:
+    image: mysql:8
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: sipub_test
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s  # Allows MySQL some time to initialize
+
+volumes:
+  mysql_data:

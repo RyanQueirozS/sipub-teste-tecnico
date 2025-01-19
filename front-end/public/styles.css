@@ -1,0 +1,24 @@
+/* https://coolors.co/bac1b8-58a4b0-0c7c59-2b303a-d64933 randomly generated colors */
+.bg-white {
+    background-color: #ffffff !important
+}
+
+.bg-blue {
+    background-color: #58A4B0 !important
+}
+
+.btn-grow:hover {
+    transform: scale(1.1); /* Increase size by 10% */
+    transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.a-size-capper {
+    width: 4%;
+    height: 4%;
+}
+
+.header-images{
+    width: 100%;
+    height: 100%;
+}
+
